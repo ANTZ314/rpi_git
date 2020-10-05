@@ -1,0 +1,35 @@
+===============
+VERSION 01:
+===============
+------------------------------
+INSTALL:
+------------------------------
+sudo apt update --fix-missing
+sudo apt install zbar-tools
+
+------------------------------
+USE:
+------------------------------
+raspistill  -o image.jpg && zbarimg image.jpg
+
+
+===============
+VERSION 02:
+===============
+------------------------------
+INSTALL:
+------------------------------
+sudo apt-get install libzbar0
+pip install pyzbar
+
+------------------------------
+scanner.py
+------------------------------
+USE:
+python scanner.py --image qrcode.png
+
+------------------------------
+scanner2.py
+------------------------------
+USE:
+python scanner2.py

@@ -2,11 +2,15 @@
 						Gait Kinematic Tracking:
 ====================================================================================
 
-
+--------
 STARTUP:
 --------
-workon gait
-cd ~/Desktop/aubry/
+Ubuntu - Blutetooth Errors:
+	workon gait
+	cd ~/Desktop/aubry/
+	
+Raspi - Git:
+	cd ~/Documents/rpi_git/aubry/
 
 
 ------------------------------------------------------------------------------------
