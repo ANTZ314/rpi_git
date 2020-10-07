@@ -37,17 +37,17 @@ try:
     def progress_update_handler(context, entries_left, total_entries):
         if (entries_left == 0):
             e.set()
-    
+    print("Got here1")
     fn_wrapper = FnVoid_VoidP_UInt_UInt(progress_update_handler)
     download_handler = LogDownloadHandler(context = None, \
         received_progress_update = fn_wrapper, \
         received_unknown_entry = cast(None, FnVoid_VoidP_UByte_Long_UByteP_UByte), \
         received_unhandled_entry = cast(None, FnVoid_VoidP_DataP))
-
+    print("Got here2")
     callback = FnVoid_VoidP_DataP(lambda ctx, p: print("{epoch: %d, value: %s}" % (p.contents.epoch, parse_value(p))))
     libmetawear.mbl_mw_logger_subscribe(logger, None, callback)
     libmetawear.mbl_mw_logging_download(d.board, 0, byref(download_handler))
-    e.wait()
+    e.wait()    # key wait??
 	
 except RuntimeError as err:
     print(err)

@@ -1,4 +1,11 @@
 {
+  "info": {
+    "serial": "0271EE",
+    "hardware": "0.2",
+    "model": "6",
+    "manufacturer": "MbientLab Inc",
+    "firmware": "1.5.0"
+  },
   "cpp_state": [
     2,
     0,
@@ -615,22 +622,15 @@
     19,
     0,
     1,
-    22,
-    212,
-    167,
-    2,
+    24,
+    216,
+    27,
+    3,
     117,
     1,
     0,
     0,
     2,
     0
-  ],
-  "info": {
-    "hardware": "0.2",
-    "firmware": "1.5.0",
-    "serial": "0271EE",
-    "model": "6",
-    "manufacturer": "MbientLab Inc"
-  }
+  ]
 }

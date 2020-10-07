@@ -11,9 +11,6 @@ Class called by 'main.py'
 """
 ## IMPORT DEPENDENCIES ##
 from __future__ import print_function
-from mbientlab.metawear import MetaWear, libmetawear, parse_value
-from mbientlab.metawear.cbindings import *
-from mbientlab.metawear import MetaWear
 from mbientlab.metawear import *
 from mbientlab.warble import *
 
