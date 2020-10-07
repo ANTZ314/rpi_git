@@ -11,6 +11,8 @@ Segmentation Fault Note:
 	untested maximum (16mb) ? ?	-> 16384 = 8192 (x2)
 
 Usage:
+python3 main.py
+-OR-
 python3 /home/pi/Documents/rpi_git/aubry/main/main.py
 """
 #import sensClass1 as sens						# Tutorial Version
@@ -26,7 +28,6 @@ crash = "crash.log"
 ## MAIN FUNCTION ##
 def main():
 	## Handle - segmentation fault ##
-	#faulthandler.enable(file=open(crash, "w"))	# supposed to write to file?
 	faulthandler.enable()						# enable handler
 	
 	sensor1 = sens.sens1()						# instantuate device class
@@ -39,9 +40,9 @@ def main():
 		try:
 			sensor1.DevRun() 					# run?
 			
-			print("<------------------->")		# comes here how often??
-			print("SHOW WHERE RUN BREAKS")		# Every 'x' prints??
-			print("<------------------->")		#
+			print("<-------------->")			# comes here how often??
+			print(" WE DO COME HER ")			# Every 'x' prints??
+			print("<-------------->")			#
 			time.sleep(2)						# SKIPS THE BREAK?
 			
 			
@@ -60,8 +61,8 @@ def main():
 		## Keyboard Exit ##
 		except KeyboardInterrupt:
 			sensor1.DevClose()
-			print("\r\nKey Exit - Device Closed")
-			sys.exit(0)	
+			print("\r\nEscape (MAIN) - Device Closed...")
+			sys.exit(0)	 
 		## Unknown Error ##
 		except:
 			print("\r\nUnexpected Error:", sys.exc_info()[0])

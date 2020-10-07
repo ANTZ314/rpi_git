@@ -615,11 +615,11 @@
     19,
     0,
     1,
-    207,
-    67,
-    32,
-    254,
-    116,
+    108,
+    98,
+    144,
+    2,
+    117,
     1,
     0,
     0,
@@ -627,10 +627,10 @@
     0
   ],
   "info": {
-    "model": "6",
     "firmware": "1.5.0",
-    "serial": "0271EE",
+    "manufacturer": "MbientLab Inc",
+    "model": "6",
     "hardware": "0.2",
-    "manufacturer": "MbientLab Inc"
+    "serial": "0271EE"
   }
 }

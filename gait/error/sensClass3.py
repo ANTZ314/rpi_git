@@ -17,20 +17,15 @@ from mbientlab.metawear import MetaWear
 from mbientlab.metawear import *
 from mbientlab.warble import *
 
-#from subprocess import call 
-#import platform,six,threading,subprocess
-import time, csv, os, sys							# os.path
-
-#ID1 = MetaWear("FB:E2:B9:C5:60:AA")
+## Various System Tools ##
+import time, os, sys
 
 
 class sens1:
-	filename = 'log1.csv'							# Log file - remove later
-	
 	## INSTANTIATE THE CLASS ##
 	def __init__(self, **kwargs):
-		self.cnt = 0								# Show number of data calls
-		print("Go Sensor Class!!")					# done
+		self.cnt = 0
+		print("Go Sensor Class!!")
 
 		
 	## INITIALISE THE DEVICE CONNECTION ##
@@ -39,7 +34,8 @@ class sens1:
 		self.board = self.device.board
 		#self.sensordatastr = ""					# Don't seem to need this ? ?
 		self.euler_signal =  None					# only needed in 'close()'
-		print ("Connected to sensor 1")
+		
+		## Attempt to connect to Device ##
 		try:
 			self.device.connect()
 		except:
@@ -50,10 +46,9 @@ class sens1:
 	def startup(self):
 		
 		try:
-			self.sensordatastr 	= ""
-			self.EulerAngels	= None
-			self.euler_signal 	= None
-			#self.checkLogFiles(self.filename)			# create/check csv backup file 
+			self.sensordatastr = ""
+			self.EulerAngels= None
+			self.euler_signal =  None
 			
 			## Create Data Dictionary ##
 			self.sensorData = {"epoch"	:0,
@@ -62,35 +57,42 @@ class sens1:
 							   "roll"	:0,
 							   "yaw"	:0,
 							   "logs"	:0}				# removed 'filename'
-		
-		## Handle any & all Errors ##
+						   
+		## System Error: ##
 		except OSError as err:
-			print ("OS ERROR {}".format(err))
+			print ("\r\nOS ERROR {}".format(err))
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
+		## Value Error ##
 		except ValueError:
-			print("Error with variable...")
+			print("\r\nError with variable...")
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
+		## Keyboard Exit ##
+		except KeyboardInterrupt:
+			sensor1.DevClose()
+			print("\r\nEscape (START) - Device Closed...")
+			sys.exit(0)	
+		## Unknown Error ##
 		except:
-			print("Unexpected Error:", sys.exc_info()[0])
+			print("\r\nUnexpected Error:", sys.exc_info()[0])
 			self.DevClose()
-			print("Device closed properly...")
-			sys.exit()
+			print("Device Closed Properly...")
+			sys.exit() 
 
 
 	## CONTINUOUS RUN - Threaded? ##
 	def DevRun(self):
 		try:
-			## Retrieve Device Data? ##
+			## Retrieve Sensor Data? ##
 			self.euler_signal = libmetawear.mbl_mw_sensor_fusion_get_data_signal(self.board, SensorFusionData.EULER_ANGLE)
 			
 			## View Data Directly - Removed ##
 			#self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
 			
-			## Extract Device Data to Dictionary ##
+			## From initi function ##
 			self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
 			
 			## All required for Data Extraction? ##
@@ -101,25 +103,31 @@ class sens1:
 			libmetawear.mbl_mw_sensor_fusion_start(self.board)
 			
 			#self.e.wait()		# what is this for ? ? - removed
-			#input('')			# what is this for ? ? - Does nothing
-		
-		## Handle any & all Errors ##	
+			#input('')			# what is this for ? ? - removed
+			
+		## System Error: ##
 		except OSError as err:
-			print ("OS ERROR {}".format(err))
+			print ("\r\nOS ERROR {}".format(err))
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
+		## Value Error ##
 		except ValueError:
-			print("Error with variable...")
+			print("\r\nError with variable...")
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
+		## Keyboard Exit ##
+		except KeyboardInterrupt:
+			sensor1.DevClose()
+			print("\r\nEscape (RUN) - Device Closed...")
+			sys.exit(0)	
+		## Unknown Error ##
 		except:
-			print("Unexpected Error:", sys.exc_info()[0])
+			print("\r\nUnexpected Error:", sys.exc_info()[0])
 			self.DevClose()
-			print("Device closed properly...")
+			print("Device Closed Properly...")
 			sys.exit()
-	
 	
 	## CLOSE THE CONNECTION PROPERLY ##
 	def DevClose(self):
@@ -130,18 +138,13 @@ class sens1:
 		time.sleep(1)
 
 
+	## EXTRACT THE DEVICE DATA TO DICTIONARY ##
 	def data_handler(self,content,data):
 		
 		## Extract data values? ##
 		EulerAngels = parse_value(data)
-		#print (EulerAngels)								# REMOVE
 		pi = pointer(EulerAngels)
 		#self.sensordatastr = str(data.contents.epoch)+","+ str(("%.4f" %pi.contents.heading)) +","+ str(("%.4f" %pi.contents.pitch))+","+ str(("%.4f" %pi.contents.roll))+","+str(("%.4f" %pi.contents.yaw))
-		
-		## Backup 'data' to csv file ##
-		#print (sensordatastr)								# REMOVE
-		#self.logData(self.filename,self.sensordatastr)
-		#sleep(0.05)
 		
 		## Update Dictionary data fields ##
 		self.sensorData["epoch"] 	= (data.contents.epoch)
@@ -153,23 +156,4 @@ class sens1:
 		
 		self.cnt = self.cnt +1
 		print (self.sensorData)								# View Dictionary
-		#sleep(0.02)										# REMOVED
-
-	## REMOVE - CHECK/CREATE CSV FILE ##
-	def checkLogFiles(self,filename):
-		## Does CSV file exist ##
-		res =  os.path.exists(filename)
-		## Create if doesn't exist ##
-		if res == False:
-			print("no file found, creating file")
-			f = open(filename,"w+")
-			f.close()
-			print ("file created")
-			
-			with open(filename, mode='w+') as csv_file:
-				fieldnames = ['epoch', 'pitch', 'roll','yaw']
-				writer = csv.DictWriter(csv_file, fieldnames=fieldnames, delimiter = ',')
-				writer.writeheader()
-		## File already existed ##
-		else:
-			print ("File found in the path")
+		

@@ -1,0 +1,17 @@
+
+{'epoch': 1602066192302, 'pitch': '170.110', 'roll': '-9.158', 'heading': '336.620', 'logs': 770, 'yaw': '336.620'}
+Fatal Python error: Segmentation fault
+
+Current thread 0x75f0e470 (most recent call first):
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 251 in <lambda>
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 123 in value_converter
+
+Thread 0x76fb2640 (most recent call first):
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 53 in _private_write_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 71 in write_without_resp_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 229 in _write_char_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 237 in _write_gatt_char
+  File "/home/pi/Documents/rpi_git/gait/error/sensClass3.py", line 99 in DevRun
+  File "main.py", line 41 in main
+  File "main.py", line 73 in <module>
+Segmentation fault
