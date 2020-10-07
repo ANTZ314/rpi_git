@@ -1,8 +1,8 @@
 
-##RasPi Working Folder:
+## RasPi Working Folder:
 
 
-####GIT Commands:
+#### GIT Commands:
 Pull:
 
 	git pull https://github.com/ANTZ314/rpi_git.git
