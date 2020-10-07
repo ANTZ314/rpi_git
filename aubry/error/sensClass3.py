@@ -29,8 +29,8 @@ class sens1:
 	
 	## INSTANTIATE THE CLASS ##
 	def __init__(self, **kwargs):
-		self.cnt = 0
-		print("Go Sensor Class!!")
+		self.cnt = 0								# Show number of data calls
+		print("Go Sensor Class!!")					# done
 
 		
 	## INITIALISE THE DEVICE CONNECTION ##
@@ -50,13 +50,10 @@ class sens1:
 	def startup(self):
 		
 		try:
-			self.sensordatastr = ""
-			self.EulerAngels= None
-			self.euler_signal =  None
+			self.sensordatastr 	= ""
+			self.EulerAngels	= None
+			self.euler_signal 	= None
 			#self.checkLogFiles(self.filename)			# create/check csv backup file 
-			
-			## ERROR HERE - REMOVED ##
-			#self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
 			
 			## Create Data Dictionary ##
 			self.sensorData = {"epoch"	:0,
@@ -65,7 +62,8 @@ class sens1:
 							   "roll"	:0,
 							   "yaw"	:0,
 							   "logs"	:0}				# removed 'filename'
-						   
+		
+		## Handle any & all Errors ##
 		except OSError as err:
 			print ("OS ERROR {}".format(err))
 			self.DevClose()
@@ -86,12 +84,13 @@ class sens1:
 	## CONTINUOUS RUN - Threaded? ##
 	def DevRun(self):
 		try:
-			## Retrieve Sensor Data? ##
+			## Retrieve Device Data? ##
 			self.euler_signal = libmetawear.mbl_mw_sensor_fusion_get_data_signal(self.board, SensorFusionData.EULER_ANGLE)
 			
 			## View Data Directly - Removed ##
 			#self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
-			## From initi function ##
+			
+			## Extract Device Data to Dictionary ##
 			self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
 			
 			## All required for Data Extraction? ##
@@ -104,7 +103,7 @@ class sens1:
 			#self.e.wait()		# what is this for ? ? - removed
 			#input('')			# what is this for ? ? - Does nothing
 		
-		## Catch ANY errors ##	
+		## Handle any & all Errors ##	
 		except OSError as err:
 			print ("OS ERROR {}".format(err))
 			self.DevClose()
@@ -145,12 +144,12 @@ class sens1:
 		#sleep(0.05)
 		
 		## Update Dictionary data fields ##
-		self.sensorData["epoch"] = (data.contents.epoch)
-		self.sensorData["heading"] = ("%.4f" %pi.contents.heading)
-		self.sensorData["pitch"] = ("%.4f" %pi.contents.pitch)
-		self.sensorData["roll"] = ("%.4f" %pi.contents.roll)
-		self.sensorData["yaw"]  = ("%.4f" %pi.contents.yaw)
-		self.sensorData["logs"] = self.cnt
+		self.sensorData["epoch"] 	= (data.contents.epoch)
+		self.sensorData["heading"] 	= ("%.3f" %pi.contents.heading)
+		self.sensorData["pitch"] 	= ("%.3f" %pi.contents.pitch)
+		self.sensorData["roll"] 	= ("%.3f" %pi.contents.roll)
+		self.sensorData["yaw"]  	= ("%.3f" %pi.contents.yaw)
+		self.sensorData["logs"] 	= self.cnt
 		
 		self.cnt = self.cnt +1
 		print (self.sensorData)								# View Dictionary

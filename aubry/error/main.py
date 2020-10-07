@@ -39,9 +39,9 @@ def main():
 		try:
 			sensor1.DevRun() 					# run?
 			
-			print("<-------------->")			# comes here how often??
-			print(" WE DO COME HER ")			# Every 'x' prints??
-			print("<-------------->")			#
+			print("<------------------->")		# comes here how often??
+			print("SHOW WHERE RUN BREAKS")		# Every 'x' prints??
+			print("<------------------->")		#
 			time.sleep(2)						# SKIPS THE BREAK?
 			
 			
@@ -60,8 +60,8 @@ def main():
 		## Keyboard Exit ##
 		except KeyboardInterrupt:
 			sensor1.DevClose()
-			print("\r\nKeyboard Exit!!")		# 
-			sys.exit(0)							# 
+			print("\r\nKey Exit - Device Closed")
+			sys.exit(0)	
 		## Unknown Error ##
 		except:
 			print("\r\nUnexpected Error:", sys.exc_info()[0])

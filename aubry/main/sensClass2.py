@@ -1,4 +1,9 @@
 """
+Description:
+	Essentially Aubry's version of the class
+	With csv storage functions
+	Error: Segmentation Error - memory?
+
 Edit of Aubry's edited code...
 """
 

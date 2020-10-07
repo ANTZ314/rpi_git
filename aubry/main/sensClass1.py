@@ -1,4 +1,12 @@
 """
+Description:
+	Seems to be original tutorial code
+	After connection
+	Prints output data directly to console
+	Questions:
+		Format of data?
+		Extraction point?
+
 Class called by 'main.py'
 """
 ## IMPORT DEPENDENCIES ##
@@ -42,8 +50,11 @@ class sens1:
 	## CONTINUOUS RUN ##
 	def DevRun(self):
 		try:
+			## Get data and print to console ##
 			self.euler_signal = libmetawear.mbl_mw_sensor_fusion_get_data_signal(self.board, SensorFusionData.EULER_ANGLE)
 			self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
+			
+			## Required for data extraction ##
 			libmetawear.mbl_mw_datasignal_subscribe(self.euler_signal, None, self.euler_callback)
 			libmetawear.mbl_mw_sensor_fusion_enable_data(self.board, SensorFusionData.EULER_ANGLE)
 			libmetawear.mbl_mw_sensor_fusion_set_mode(self.board, SensorFusionMode.NDOF)
@@ -51,8 +62,18 @@ class sens1:
 			libmetawear.mbl_mw_sensor_fusion_start(self.board)
 			#input('')								# Don't seem to need this ? ?
 			
-		except Exception as e:
-			print ("RUN ERROR - {}".format(e))
+		except OSError as err:
+			print ("OS ERROR {}".format(err))
+			self.DevClose()
+			print("Device closed properly...")
+			sys.exit()
+		except ValueError:
+			print("Error with variable...")
+			self.DevClose()
+			print("Device closed properly...")
+			sys.exit()
+		except:
+			print("Unexpected Error:", sys.exc_info()[0])
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
