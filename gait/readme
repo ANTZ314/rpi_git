@@ -6,6 +6,11 @@ Device:
 --------
 MetaMotionC - MMC
 
+------------
+ReStart BLE:
+------------
+sudo systemctl stop bluetooth
+sudo systemctl start bluetooth
 
 ------------------------------------------------------------------------------------
 Requirements:
@@ -27,9 +32,9 @@ Dependencies:
 >>> python3 -m pip install metawear 			<-- installed in /home/pi/.local/lib
 >>> sudo python3 -m pip install metawear 		<-- installed in /usr/local/lib
 
-------
-ERROR:
-------
+--------------------
+UBUNTU VM BLE ERROR:
+--------------------
 --> fatal error: bluetooth/bluetooth.h: No such file or directory
 
 

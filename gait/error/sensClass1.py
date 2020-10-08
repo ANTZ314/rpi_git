@@ -30,6 +30,8 @@ class sens1:
 		
 	## INITIALISE THE DEVICE CONNECTION ##
 	def DevConnect(self, device):
+		conPass = True
+		
 		self.device = MetaWear(device)
 		self.board = self.device.board
 		#self.sensordatastr = ""					# Don't seem to need this ? ?
@@ -38,10 +40,13 @@ class sens1:
 			self.device.connect()					# Attempt connection
 		except:
 			print("FAILED TO CONNECT...")
+			conPass = False
+
 
 	## Do Nothing Here - For other Class ##
 	def startup(self):
 		print("For Posterity...")
+
 
 	## CONTINUOUS RUN ##
 	def DevRun(self):
@@ -73,6 +78,7 @@ class sens1:
 			self.DevClose()
 			print("Device closed properly...")
 			sys.exit()
+	
 	
 	## CLOSE THE CONNECTION PROPERLY ##
 	def DevClose(self):

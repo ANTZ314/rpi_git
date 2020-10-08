@@ -1,10 +1,9 @@
 """
 Description:
 	My restructured class version of Aubry's class
-	Removed seemingly unnecessary lines
+	Removed seemingly unnecessary lines & commented lines
 	Added comments & some exception catches
-	Taken aspect from other class -> dictionary creation
-	--> Find cause of segmentation fault - memory?
+	Find cause of segmentation fault - memory?
 	
 
 Class called by 'main.py'
@@ -27,6 +26,8 @@ class sens1:
 		
 	## INITIALISE THE DEVICE CONNECTION ##
 	def DevConnect(self, device):
+		conPass = True
+		
 		self.device = MetaWear(device)
 		self.board = self.device.board
 		self.euler_signal =  None					# only used in 'close()' ?
@@ -36,15 +37,17 @@ class sens1:
 			self.device.connect()
 		except:
 			print("FAILED TO CONNECT...")
+			conPass = False
+			
+		return conPass
 
 
 	## SETUP VARIOUS VARIABLES ##
 	def startup(self):
-		
 		try:
 			self.sensordatastr = ""
 			self.EulerAngels= None
-			self.euler_signal =  None
+			#self.euler_signal =  None			# runs without
 			
 			## Create Data Dictionary ##
 			self.sensorData = {"epoch"	:0,
@@ -86,10 +89,10 @@ class sens1:
 			self.euler_signal = libmetawear.mbl_mw_sensor_fusion_get_data_signal(self.board, SensorFusionData.EULER_ANGLE)
 			
 			## View Data Directly - Removed ##
-			self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
+			#self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
 			
 			## From initi function ##
-			#self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
+			self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
 			
 			## All required for Data Extraction? ##
 			libmetawear.mbl_mw_datasignal_subscribe(self.euler_signal, None, self.euler_callback)
@@ -124,6 +127,7 @@ class sens1:
 			self.DevClose()
 			print("Device Closed Properly...")
 			sys.exit()
+	
 	
 	## CLOSE THE CONNECTION PROPERLY ##
 	def DevClose(self):

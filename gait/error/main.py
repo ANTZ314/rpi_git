@@ -9,6 +9,7 @@ Segmentation Fault Note:
 	View current Stack Size 	-> ulimit -a
 	Increase Stack Size (1mb) 	-> ulimit -s 1024
 	untested maximum (16mb) ? ?	-> 16384 = 8192 (x2)
+	Added Connection Fail Skip
 
 Usage:
 python3 main.py
@@ -16,7 +17,7 @@ python3 main.py
 python3 /home/pi/Documents/rpi_git/aubry/main/main.py
 """
 #import sensClass1 as sens						# Tutorial Version
-import sensClass3 as sens						# Aubry version
+import sensClass2 as sens						# Aubry version
 import sys, time								# system things
 import faulthandler
 
@@ -28,49 +29,57 @@ crash = "crash.log"
 ## MAIN FUNCTION ##
 def main():
 	stopCnt = 0
+	conPass = False
+	
 	## Handle - segmentation fault ##
 	faulthandler.enable()						# enable handler
 	
 	sensor1 = sens.sens1()						# instantuate device class
 		
 	## Initialise the Device ##
-	sensor1.DevConnect(ID)
+	conPass = sensor1.DevConnect(ID)
 	sensor1.startup()
 
 	#while True:
 	try:
-		# REMOVE
-		print("Start 1st RUN")			# REMOVE
-		time.sleep(2.5)
-		
-		## RUN ##
-		sensor1.DevRun()
-				
-		## RUN for 'x' Seconds ##
-		while stopCnt < 20:
-			stopCnt += 1
-			time.sleep(1)
-		
-		## Clear for next RUN ##
-		stopCnt = 0
-		
-		## Close Device ##
-		sensor1.DevClose()
-		print("Closed Device")			# REMOVE
-		time.sleep(2.5)
-		
-		## Attempt ReConnection ##
-		sensor1.DevReConnect(ID)
-		print("Started 2nd RUN")		# REMOVE
-		time.sleep(2.5)
-		
-		## RUN ##
-		sensor1.DevRun()
-		
-		## RUN for 'x' Seconds ##
-		while stopCnt < 20:
-			stopCnt += 1
-			time.sleep(1)
+		if(conPass == True):
+			# REMOVE
+			print("Start 1st RUN")			# REMOVE
+			time.sleep(2.5)
+			
+			## RUN ##
+			sensor1.DevRun()
+					
+			## RUN for 'x' Seconds ##
+			while stopCnt < 30:
+				stopCnt += 1
+				time.sleep(1)
+			
+			## Clear for next RUN ##
+			stopCnt = 0
+			
+			## Close Device ##
+			sensor1.DevClose()
+			print("Closed Device")			# REMOVE
+			time.sleep(2.5)
+			
+			## Attempt ReConnection ##
+			sensor1.DevReConnect(ID)
+			print("Started 2nd RUN")		# REMOVE
+			time.sleep(2.5)
+			
+			## RUN ##
+			sensor1.DevRun()
+			
+			## RUN for 'x' Seconds ##
+			while stopCnt < 30:
+				stopCnt += 1
+				time.sleep(1)
+		## Connection Failed ##
+		else:
+			## Reset Everything ##
+			print("RESET BLE and SENSOR??")
+			time.sleep(3)
 		
 		print("COMPLETE")				# REMOVE
 		
