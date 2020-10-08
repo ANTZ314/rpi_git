@@ -40,42 +40,69 @@ def main():
 	#while True:
 	try:
 		# REMOVE
-		print("Skips on first run")
+		print("Start 1st RUN")			# REMOVE
 		time.sleep(2.5)
 		
-		sensor1.DevRun() 						# run?
+		## RUN ##
+		sensor1.DevRun()
 				
-		## EXIT PROPERLY -> LOOP ##
-		while stopCnt < 60:
+		## RUN for 'x' Seconds ##
+		while stopCnt < 20:
 			stopCnt += 1
 			time.sleep(1)
+		
+		## Clear for next RUN ##
+		stopCnt = 0
+		
+		## Close Device ##
+		sensor1.DevClose()
+		print("Closed Device")			# REMOVE
+		time.sleep(2.5)
+		
+		## Attempt ReConnection ##
+		sensor1.DevReConnect(ID)
+		print("Started 2nd RUN")		# REMOVE
+		time.sleep(2.5)
+		
+		## RUN ##
+		sensor1.DevRun()
+		
+		## RUN for 'x' Seconds ##
+		while stopCnt < 20:
+			stopCnt += 1
+			time.sleep(1)
+		
+		print("COMPLETE")				# REMOVE
 		
 	## System Error: ##
 	except OSError as err:
 		print ("\r\nOS ERROR {}".format(err))
-		self.DevClose()
+		sensor1.DevClose()
 		print("Device closed properly...")
 		sys.exit()
 	## Value Error ##
 	except ValueError:
 		print("\r\nError with variable...")
-		self.DevClose()
+		sensor1.DevClose()
 		print("Device closed properly...")
 		sys.exit()
 	## Keyboard Exit ##
 	except KeyboardInterrupt:
 		sensor1.DevClose()
 		print("\r\nEscape (MAIN) - Device Closed...")
-		sys.exit(0)	 
+		sys.exit(0)	
+	## NameError - Suggested ##
+	except NameError:
+		print("\r\nNameError:")
 	## Unknown Error ##
 	except:
 		print("\r\nUnexpected Error:", sys.exc_info()[0])
-		self.DevClose()
+		sensor1.DevClose()
 		print("Device Closed Properly...")
 		sys.exit() 
 	
 	finally:
 		sensor1.DevClose()
-		print("Closed Device")
+		print("Closed Device - Final!!")
 
 if __name__ == "__main__":	main()

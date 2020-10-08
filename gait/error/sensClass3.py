@@ -29,8 +29,7 @@ class sens1:
 	def DevConnect(self, device):
 		self.device = MetaWear(device)
 		self.board = self.device.board
-		#self.sensordatastr = ""					# Don't seem to need this ? ?
-		self.euler_signal =  None					# only needed in 'close()'
+		self.euler_signal =  None					# only used in 'close()' ?
 		
 		## Attempt to connect to Device ##
 		try:
@@ -69,7 +68,7 @@ class sens1:
 			sys.exit()
 		## Keyboard Exit ##
 		except KeyboardInterrupt:
-			sensor1.DevClose()
+			self.DevClose()
 			print("\r\nEscape (START) - Device Closed...")
 			sys.exit(0)	
 		## Unknown Error ##
@@ -87,10 +86,10 @@ class sens1:
 			self.euler_signal = libmetawear.mbl_mw_sensor_fusion_get_data_signal(self.board, SensorFusionData.EULER_ANGLE)
 			
 			## View Data Directly - Removed ##
-			#self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
+			self.euler_callback = FnVoid_VoidP_DataP(lambda context,data:print("epoch: %s, euler %s\n" % (data.contents.epoch, parse_value(data))))
 			
 			## From initi function ##
-			self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
+			#self.euler_callback = FnVoid_VoidP_DataP(self.data_handler)
 			
 			## All required for Data Extraction? ##
 			libmetawear.mbl_mw_datasignal_subscribe(self.euler_signal, None, self.euler_callback)
@@ -116,7 +115,7 @@ class sens1:
 			sys.exit()
 		## Keyboard Exit ##
 		except KeyboardInterrupt:
-			sensor1.DevClose()
+			self.DevClose()
 			print("\r\nEscape (RUN) - Device Closed...")
 			sys.exit(0)	
 		## Unknown Error ##
@@ -134,6 +133,19 @@ class sens1:
 		self.device.disconnect()
 		time.sleep(1)
 
+
+## INITIALISE THE DEVICE CONNECTION ##
+	def DevReConnect(self, device):
+		self.device = MetaWear(device)
+		self.board = self.device.board
+		self.euler_signal =  None
+		
+		## Attempt to RE-Connect to Device ##
+		try:
+			self.device.connect()
+		except:
+			print("FAILED TO CONNECT...")
+	
 
 	## EXTRACT THE DEVICE DATA TO DICTIONARY ##
 	def data_handler(self,content,data):
