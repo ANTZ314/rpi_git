@@ -138,7 +138,7 @@ class sens1:
 		time.sleep(1)
 
 
-## INITIALISE THE DEVICE CONNECTION ##
+	## INITIALISE THE DEVICE CONNECTION ##
 	def DevReConnect(self, device):
 		self.device = MetaWear(device)
 		self.board = self.device.board
