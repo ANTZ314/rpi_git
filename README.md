@@ -1,6 +1,8 @@
 
 ## RasPi Working Folder:
 
+**Description:**
+Working folders backed up to github, PC-Documents & RasPi
 
 #### GIT Commands:
 Pull:
@@ -16,6 +18,6 @@ Push:
 
 **Current TSE projects on the RasPi:**
 
-	- Gait Tracking - Aubry code check
-	- Omnigo test and main code (main requires update)
+* Gait Tracking - Aubry code check
+* Omnigo test and main code (main requires update)
 
