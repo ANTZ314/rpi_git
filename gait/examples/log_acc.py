@@ -43,11 +43,11 @@ try:
         received_progress_update = fn_wrapper, \
         received_unknown_entry = cast(None, FnVoid_VoidP_UByte_Long_UByteP_UByte), \
         received_unhandled_entry = cast(None, FnVoid_VoidP_DataP))
-    
+
     callback = FnVoid_VoidP_DataP(lambda ctx, p: print("{epoch: %d, value: %s}" % (p.contents.epoch, parse_value(p))))
     libmetawear.mbl_mw_logger_subscribe(logger, None, callback)
     libmetawear.mbl_mw_logging_download(d.board, 0, byref(download_handler))
-    e.wait()    # key wait??
+    e.wait()
 	
 except RuntimeError as err:
     print(err)

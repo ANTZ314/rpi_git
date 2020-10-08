@@ -7,7 +7,7 @@ from threading import Event
 
 import sys
 
-device = MetaWear(sys.argv[1])
+device = MetaWear(sys.argv[1], hci_mac="B8:27:EB:F2:61:2E")
 device.connect()
 print("Connected")
 

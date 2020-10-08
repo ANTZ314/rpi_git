@@ -16,7 +16,12 @@ Thread 0x76fb2640 (most recent call first):
   File "main.py", line 73 in <module>
 Segmentation fault
 
------
 
-error 1602148097.043861: Error on line: 296 (src/blestatemachine.cc): Operation now in progress
 
+
+
+---------------------------------------------------------------------------
+https://github.com/edrosten/libblepp/blob/master/src/blestatemachine.cc
+---------------------------------------------------------------------------
+ error 1602148097.043861: Error on line: 296 (src/blestatemachine.cc): Operation now in progress
+epoch: 1602066192302
