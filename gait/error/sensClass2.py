@@ -30,7 +30,7 @@ class sens1:
 		
 		self.device = MetaWear(device)
 		self.board = self.device.board
-		self.euler_signal =  None					# only used in 'close()' ?
+		#self.euler_signal =  None					# only used in 'close()' ?
 		
 		## Attempt to connect to Device ##
 		try:
@@ -44,45 +44,21 @@ class sens1:
 
 	## SETUP VARIOUS VARIABLES ##
 	def startup(self):
-		try:
-			self.sensordatastr = ""
-			self.EulerAngels= None
-			#self.euler_signal =  None			# runs without
+		self.sensordatastr = ""
+		self.EulerAngels= None
+		self.euler_signal =  None			# runs without
 			
-			## Create Data Dictionary ##
-			self.sensorData = {"epoch"	:0,
-							   "heading":0,
-							   "pitch"	:0,
-							   "roll"	:0,
-							   "yaw"	:0,
-							   "logs"	:0}				# removed 'filename'
-						   
-		## System Error: ##
-		except OSError as err:
-			print ("\r\nOS ERROR {}".format(err))
-			self.DevClose()
-			print("Device closed properly...")
-			sys.exit()
-		## Value Error ##
-		except ValueError:
-			print("\r\nError with variable...")
-			self.DevClose()
-			print("Device closed properly...")
-			sys.exit()
-		## Keyboard Exit ##
-		except KeyboardInterrupt:
-			self.DevClose()
-			print("\r\nEscape (START) - Device Closed...")
-			sys.exit(0)	
-		## Unknown Error ##
-		except:
-			print("\r\nUnexpected Error:", sys.exc_info()[0])
-			self.DevClose()
-			print("Device Closed Properly...")
-			sys.exit() 
+		## Create Data Dictionary ##
+		self.sensorData = {"epoch"	:0,
+						   "heading":0,
+						   "pitch"	:0,
+						   "roll"	:0,
+						   "yaw"	:0,
+						   "logs"	:0}				# removed 'filename'
+		print("necessary?")
 
 
-	## CONTINUOUS RUN - Threaded? ##
+	## CONTINUOUS RUN ##
 	def DevRun(self):
 		try:
 			## Retrieve Sensor Data? ##
@@ -157,16 +133,44 @@ class sens1:
 		## Extract data values? ##
 		EulerAngels = parse_value(data)
 		pi = pointer(EulerAngels)
-		#self.sensordatastr = str(data.contents.epoch)+","+ str(("%.4f" %pi.contents.heading)) +","+ str(("%.4f" %pi.contents.pitch))+","+ str(("%.4f" %pi.contents.roll))+","+str(("%.4f" %pi.contents.yaw))
+		
+		## Temporary Copy of the Data ##
+		tmpHead	 = pi.contents.heading
+		tmpPitch = pi.contents.pitch
+		tmpRoll	 = pi.contents.roll
+		tmpYaw	 = pi.contents.yaw
+		
+		
+		## Limit Extreme Output Values ##
+		if tmpHead   > 999 or tmpHead   < -999:
+			tmpHead  = 999.000		# Only needed here - SAME VALUES?
+		if tmpPitch  > 999 or tmpPitch   < -999:
+			tmpPitch = 999.000		# Only needed here - SAME VALUES?
+		if tmpRoll   > 999 or tmpRoll   < -999:
+			tmpRoll  = 999.000
+		if tmpYaw    > 999 or tmpYaw   < -999:
+			tmpYaw   = 999.000
+		
+		## Get bottom of Epoch ##
+		num = data.contents.epoch
+		num = int(str(num)[-6:])
 		
 		## Update Dictionary data fields ##
+		self.sensorData["epoch"] 	= (num)				# epoch type = int
+		self.sensorData["heading"] 	= ("%.3f" %tmpHead)
+		self.sensorData["pitch"] 	= ("%.3f" %tmpPitch)
+		self.sensorData["roll"] 	= ("%.3f" %tmpRoll)
+		self.sensorData["yaw"]  	= ("%.3f" %tmpYaw)
+		self.sensorData["logs"] 	= self.cnt
+		"""
 		self.sensorData["epoch"] 	= (data.contents.epoch)
 		self.sensorData["heading"] 	= ("%.3f" %pi.contents.heading)
 		self.sensorData["pitch"] 	= ("%.3f" %pi.contents.pitch)
 		self.sensorData["roll"] 	= ("%.3f" %pi.contents.roll)
 		self.sensorData["yaw"]  	= ("%.3f" %pi.contents.yaw)
 		self.sensorData["logs"] 	= self.cnt
-		
+		"""
 		self.cnt = self.cnt +1
-		print (self.sensorData)								# View Dictionary
+		print(self.sensorData)								# View Dictionary
+		
 		

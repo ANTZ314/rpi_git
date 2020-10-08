@@ -47,40 +47,42 @@ def main():
 			print("Start 1st RUN")			# REMOVE
 			time.sleep(2.5)
 			
-			## RUN ##
+			#################
+			## ----RUN---- ##
+			#################
 			sensor1.DevRun()
 					
 			## RUN for 'x' Seconds ##
 			while stopCnt < 30:
 				stopCnt += 1
 				time.sleep(1)
-			
-			## Clear for next RUN ##
-			stopCnt = 0
-			
+						
 			## Close Device ##
 			sensor1.DevClose()
 			print("Closed Device")			# REMOVE
-			time.sleep(2.5)
+			stopCnt = 0						# Clear
+			time.sleep(1.5)
 			
 			## Attempt ReConnection ##
 			sensor1.DevReConnect(ID)
 			print("Started 2nd RUN")		# REMOVE
-			time.sleep(2.5)
+			time.sleep(1)
 			
-			## RUN ##
+			#################
+			## ----RUN---- ##
+			#################
 			sensor1.DevRun()
 			
 			## RUN for 'x' Seconds ##
-			while stopCnt < 30:
+			while stopCnt < 10:
 				stopCnt += 1
 				time.sleep(1)
 		## Connection Failed ##
 		else:
 			## Reset Everything ##
 			print("RESET BLE and SENSOR??")
-			time.sleep(3)
-		
+			time.sleep(1)
+			
 		print("COMPLETE")				# REMOVE
 		
 	## System Error: ##
