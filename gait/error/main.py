@@ -27,6 +27,7 @@ crash = "crash.log"
 
 ## MAIN FUNCTION ##
 def main():
+	stopCnt = 0
 	## Handle - segmentation fault ##
 	faulthandler.enable()						# enable handler
 	
@@ -36,38 +37,45 @@ def main():
 	sensor1.DevConnect(ID)
 	sensor1.startup()
 
-	while True:
-		try:
-			sensor1.DevRun() 					# run?
-			
-			print("<-------------->")			# comes here how often??
-			print(" WE DO COME HER ")			# Every 'x' prints??
-			print("<-------------->")			#
-			time.sleep(2)						# SKIPS THE BREAK?
-			
-			
-		## System Error: ##
-		except OSError as err:
-			print ("\r\nOS ERROR {}".format(err))
-			self.DevClose()
-			print("Device closed properly...")
-			sys.exit()
-		## Value Error ##
-		except ValueError:
-			print("\r\nError with variable...")
-			self.DevClose()
-			print("Device closed properly...")
-			sys.exit()
-		## Keyboard Exit ##
-		except KeyboardInterrupt:
-			sensor1.DevClose()
-			print("\r\nEscape (MAIN) - Device Closed...")
-			sys.exit(0)	 
-		## Unknown Error ##
-		except:
-			print("\r\nUnexpected Error:", sys.exc_info()[0])
-			self.DevClose()
-			print("Device Closed Properly...")
-			sys.exit() 
+	#while True:
+	try:
+		# REMOVE
+		print("Skips on first run")
+		time.sleep(2.5)
+		
+		sensor1.DevRun() 						# run?
+				
+		## EXIT PROPERLY -> LOOP ##
+		while stopCnt < 60:
+			stopCnt += 1
+			time.sleep(1)
+		
+	## System Error: ##
+	except OSError as err:
+		print ("\r\nOS ERROR {}".format(err))
+		self.DevClose()
+		print("Device closed properly...")
+		sys.exit()
+	## Value Error ##
+	except ValueError:
+		print("\r\nError with variable...")
+		self.DevClose()
+		print("Device closed properly...")
+		sys.exit()
+	## Keyboard Exit ##
+	except KeyboardInterrupt:
+		sensor1.DevClose()
+		print("\r\nEscape (MAIN) - Device Closed...")
+		sys.exit(0)	 
+	## Unknown Error ##
+	except:
+		print("\r\nUnexpected Error:", sys.exc_info()[0])
+		self.DevClose()
+		print("Device Closed Properly...")
+		sys.exit() 
+	
+	finally:
+		sensor1.DevClose()
+		print("Closed Device")
 
 if __name__ == "__main__":	main()

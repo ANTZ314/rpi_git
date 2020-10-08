@@ -15,17 +15,3 @@ Thread 0x76fb2640 (most recent call first):
   File "main.py", line 41 in main
   File "main.py", line 73 in <module>
 Segmentation fault
-
-
-------------------------------------------------------------------------------------------------
-https://mbientlab.com/community/discussion/3446/multiple-metamotionc-connection-error
-
-https://github.com/mbientlab/MetaWear-SDK-Python/search?p=1&q=parse_value&unscoped_q=parse_value
-
-https://mbientlab.com/tutorials/MetaWearAPI.html
-
-https://github.com/mbientlab/MetaWear-SDK-Python
-
-https://github.com/mbientlab/MetaWear-SDK-Python/tree/master/examples
-
-------------------------------------------------------------------------------------------------
