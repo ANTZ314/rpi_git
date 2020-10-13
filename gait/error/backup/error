@@ -1,0 +1,99 @@
+
+{'epoch': 1602066192302, 'pitch': '170.110', 'roll': '-9.158', 'heading': '336.620', 'logs': 770, 'yaw': '336.620'}
+Fatal Python error: Segmentation fault
+
+Current thread 0x75f0e470 (most recent call first):
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 251 in <lambda>
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 123 in value_converter
+
+Thread 0x76fb2640 (most recent call first):
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 53 in _private_write_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/warble/gattchar.py", line 71 in write_without_resp_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 229 in _write_char_async
+  File "/home/pi/.local/lib/python3.5/site-packages/mbientlab/metawear/metawear.py", line 237 in _write_gatt_char
+  File "/home/pi/Documents/rpi_git/gait/error/sensClass3.py", line 99 in DevRun
+  File "main.py", line 41 in main
+  File "main.py", line 73 in <module>
+Segmentation fault
+
+
+<<<<<<< HEAD
+---------------------------------------------------------------------------
+Sometimes Output is:
+---------------------------------------------------------------------------
+{'roll': '-0.683', 'logs': 1916, 'heading': '15.430', 'epoch': 1602161496507, 'pitch': '0.737', 'yaw': '15.430'}
+{'roll': '102640697344.000', 'logs': 1917, 'heading': '0.000', 'epoch': 1602161496507, 'pitch': '13780064881707319296.000', 'yaw': '0.000'}
+{'roll': '-0.683', 'logs': 1918, 'heading': '15.430', 'epoch': 1602161496509, 'pitch': '0.737', 'yaw': '15.430'}
+
+{'roll': '-0.683', 'logs': 1462, 'heading': '15.430', 'epoch': 1602161491000, 'pitch': '0.737', 'yaw': '15.430'}
+{'roll': '886847787372401119798716421636096.000', 'logs': 1463, 'heading': '15.430', 'epoch': 1602161491000, 'pitch': '0.737', 'yaw': '2.035'}
+{'roll': '-0.683', 'logs': 1464, 'heading': '15.430', 'epoch': 1602161491046, 'pitch': '0.737', 'yaw': '15.430'}
+=======
+
+>>>>>>> 874eb7ef25530e4301bc4d7978dcaab37c726e20
+
+
+---------------------------------------------------------------------------
+https://github.com/edrosten/libblepp/blob/master/src/blestatemachine.cc
+---------------------------------------------------------------------------
+ error 1602148097.043861: Error on line: 296 (src/blestatemachine.cc): Operation now in progress
+epoch: 1602066192302
+<<<<<<< HEAD
+
+
+---------------------------------------------------------------------------
+Reset the Board - Logging mode?:
+---------------------------------------------------------------------------
+device.connect()
+# Stops data logging
+libmetawear.mbl_mw_logging_stop(device.board)
+# Clear the logger of saved entries
+libmetawear.mbl_mw_logging_clear_entries(device.board)
+
+# Remove all macros on the flash memory
+libmetawear.mbl_mw_macro_erase_all(device.board)
+# Restarts the board after performing garbage collection
+libmetawear.mbl_mw_debug_reset_after_gc(device.board)
+
+print("Erase logger, state, and macros")
+libmetawear.mbl_mw_debug_disconnect(device.board)
+device.disconnect()
+print("Disconnected")
+
+
+---------------------------------------------------------------------------
+Here is an example to stream accelerometer data:
+---------------------------------------------------------------------------
+# Callback function pointer
+callback = FnVoid_VoidP_DataP(self.data_handler)
+
+# Callback function to process/parse the gyroscope data
+def data_handler(self, ctx, data):
+    print("%s -> %s" % (self.device.address, parse_value(data)))
+
+# Setup the accelerometer sample frequency and range
+libmetawear.mbl_mw_acc_set_odr(device.board, 100.0)
+libmetawear.mbl_mw_acc_set_range(device.board, 16.0)
+libmetawear.mbl_mw_acc_write_acceleration_config(device.board)
+
+# Get the accelerometer data signal
+signal = libmetawear.mbl_mw_acc_get_acceleration_data_signal(device.board)
+# Subscribe to it
+libmetawear.mbl_mw_datasignal_subscribe(signal, None, callback)
+
+# Enable the accelerometer
+libmetawear.mbl_mw_acc_enable_acceleration_sampling(device.board)
+libmetawear.mbl_mw_acc_start(device.board)
+
+...
+
+# Disable the accelerometer
+libmetawear.mbl_mw_acc_stop(device.board)
+libmetawear.mbl_mw_acc_disable_acceleration_sampling(device.board)
+
+# Unsubscribe to it
+signal = libmetawear.mbl_mw_acc_get_acceleration_data_signal(device.board)
+libmetawear.mbl_mw_datasignal_unsubscribe(signal)
+libmetawear.mbl_mw_debug_disconnect(device.board)
+=======
+>>>>>>> 874eb7ef25530e4301bc4d7978dcaab37c726e20

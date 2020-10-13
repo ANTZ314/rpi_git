@@ -3,9 +3,10 @@ Description:
 	My restructured class version of Aubry's class
 	Removed seemingly unnecessary lines & commented lines
 	Added comments & some exception catches
-	Find cause of segmentation fault - memory?
+	Aim:
+	- locate cause of segmentation fault - memory?
+	- otherwise at fail -> reconnect
 	
-
 Class called by 'main.py'
 """
 ## IMPORT DEPENDENCIES ##
@@ -54,8 +55,8 @@ class sens1:
 						   "pitch"	:0,
 						   "roll"	:0,
 						   "yaw"	:0,
-						   "logs"	:0}				# removed 'filename'
-		print("necessary?")
+						   "logs"	:0}		# removed 'filename'
+		print("...?")						# indentation error?
 
 
 	## CONTINUOUS RUN ##
@@ -77,9 +78,11 @@ class sens1:
 			libmetawear.mbl_mw_sensor_fusion_write_config(self.board)
 			libmetawear.mbl_mw_sensor_fusion_start(self.board)
 			
-			#self.e.wait()		# what is this for ? ? - removed
-			#input('')			# what is this for ? ? - removed
 			
+			## Only check every 5 sec ? ? ? ##
+			## Return "still runnning" ##
+			#return self.cnt
+						
 		## System Error: ##
 		except OSError as err:
 			print ("\r\nOS ERROR {}".format(err))
@@ -116,6 +119,8 @@ class sens1:
 
 	## INITIALISE THE DEVICE CONNECTION ##
 	def DevReConnect(self, device):
+		conPass = True							# CONNECTION STATUS
+		
 		self.device = MetaWear(device)
 		self.board = self.device.board
 		self.euler_signal =  None
@@ -125,6 +130,9 @@ class sens1:
 			self.device.connect()
 		except:
 			print("FAILED TO CONNECT...")
+			conPass = False
+			
+		return conPass
 	
 
 	## EXTRACT THE DEVICE DATA TO DICTIONARY ##
@@ -142,11 +150,11 @@ class sens1:
 		
 		
 		## Limit Extreme Output Values ##
-		if tmpHead   > 999 or tmpHead   < -999:
-			tmpHead  = 999.000		# Only needed here - SAME VALUES?
-		if tmpPitch  > 999 or tmpPitch   < -999:
-			tmpPitch = 999.000		# Only needed here - SAME VALUES?
-		if tmpRoll   > 999 or tmpRoll   < -999:
+		if tmpHead   > 999 or tmpHead  < -999:
+			tmpHead  = 999.000								# SAME VALUES?
+		if tmpPitch  > 999 or tmpPitch < -999:
+			tmpPitch = 999.000								# SAME VALUES?
+		if tmpRoll   > 999 or tmpRoll  < -999:
 			tmpRoll  = 999.000
 		if tmpYaw    > 999 or tmpYaw   < -999:
 			tmpYaw   = 999.000
@@ -156,21 +164,21 @@ class sens1:
 		num = int(str(num)[-6:])
 		
 		## Update Dictionary data fields ##
-		self.sensorData["epoch"] 	= (num)				# epoch type = int
+		self.sensorData["epoch"] 	= (num)					# epoch type = int
 		self.sensorData["heading"] 	= ("%.3f" %tmpHead)
 		self.sensorData["pitch"] 	= ("%.3f" %tmpPitch)
 		self.sensorData["roll"] 	= ("%.3f" %tmpRoll)
 		self.sensorData["yaw"]  	= ("%.3f" %tmpYaw)
 		self.sensorData["logs"] 	= self.cnt
-		"""
-		self.sensorData["epoch"] 	= (data.contents.epoch)
-		self.sensorData["heading"] 	= ("%.3f" %pi.contents.heading)
-		self.sensorData["pitch"] 	= ("%.3f" %pi.contents.pitch)
-		self.sensorData["roll"] 	= ("%.3f" %pi.contents.roll)
-		self.sensorData["yaw"]  	= ("%.3f" %pi.contents.yaw)
-		self.sensorData["logs"] 	= self.cnt
-		"""
-		self.cnt = self.cnt +1
-		print(self.sensorData)								# View Dictionary
-		
+
+		self.cnt = self.cnt +1								# increment counter
+		if self.cnt >= 9999:
+			self.cnt = 0									# avoid oversized value
+		#print(self.sensorData)								# View Dictionary
+	
+	## CHECK STILL RUNNING ##
+	def logVal(self):
+		#print("Cnt {}".format(self.cnt))
+		## Return Log Value ##
+		return self.cnt
 		

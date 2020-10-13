@@ -19,21 +19,17 @@ python3 /home/pi/Documents/rpi_git/aubry/main/main.py
 #import sensClass1 as sens						# Tutorial Version
 import sensClass2 as sens						# Aubry version
 import sys, time								# system things
-import faulthandler								# guess what this handles
+import faulthandler
 
 ## Sensor ID ##
+#ID = MetaWear("FB:E2:B9:C5:60:AA")
 ID = "FB:E2:B9:C5:60:AA"
 crash = "crash.log"
 
-
-###################
 ## MAIN FUNCTION ##
-###################
 def main():
-	stopCnt = True								# initially stay in check loop
-	log1 = 0									# get log value
-	log2 = 0									# comparitive value
-	conPass = False								# connected successfully?
+	stopCnt = 0
+	conPass = False
 	
 	## Handle - segmentation fault ##
 	faulthandler.enable()						# enable handler
@@ -46,44 +42,48 @@ def main():
 
 	#while True:
 	try:
-		## CONNECTION PASS ##
-		if(conPass == True):			
+		if(conPass == True):
+			# REMOVE
+			print("Start 1st RUN")			# REMOVE
+			time.sleep(2.5)
+			
 			#################
 			## ----RUN---- ##
 			#################
-			sensor1.DevRun()					# Execute once per connection
+			sensor1.DevRun()
+					
+			## RUN for 'x' Seconds ##
+			while stopCnt < 15:
+				stopCnt += 1
+				time.sleep(1)
+						
+			## Close Device ##
+			sensor1.DevClose()
+			print("Closed Device")			# REMOVE
+			stopCnt = 0						# Clear
+			time.sleep(1.5)
 			
-			#--------------------------------------------#
+			## Attempt ReConnection ##
+			sensor1.DevReConnect(ID)
+			print("Started 2nd RUN")		# REMOVE
+			time.sleep(1)
+			
+			#################
+			## ----RUN---- ##
+			#################
+			sensor1.DevRun()
 			
 			## RUN for 'x' Seconds ##
-			while stopCnt == True:
-				#stopCnt += 1
-				time.sleep(3)					# check every 3 sec
-				log1 = sensor1.logVal()			# get log count value
-				print("Log: {}".format(log1))	# REMOVE
-				
-				## log1 higher: 		 ##
-				## - until log is zeroed ##
-				## - or RUN loop stops   ##
-				if log1 > log2:					# comparison
-					log2 = log1					# get new comp value
-				else:
-					stopCnt = False 			# break loop
-				
+			while stopCnt < 10:
+				stopCnt += 1
+				time.sleep(1)
+		## Connection Failed ##
+		else:
+			## Reset Everything ##
+			print("RESET BLE and SENSOR??")
+			time.sleep(1)
 			
-			print("GOT STUCK - RESTART")		# REMOVE
-			time.sleep(3.5)						# REMOVE
-			
-			## CLOSE DEVICE ##
-			sensor1.DevClose()
-			print("Closed Device - FIRST")		# REMOVE
-			stopCnt = 0							# Clear
-			time.sleep(1.5)						# REMOVE
-			
-					
-		
-		## END OF RUN ##
-		print("COMPLETE")						# REMOVE
+		print("COMPLETE")				# REMOVE
 		
 	## System Error: ##
 	except OSError as err:
@@ -113,8 +113,7 @@ def main():
 		sys.exit() 
 	
 	finally:
-		## CLOSE DEVICE ##
-		sensor1.DevClose()						# Check already closed??
+		sensor1.DevClose()
 		print("Closed Device - Final!!")
 
 if __name__ == "__main__":	main()
