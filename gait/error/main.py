@@ -31,71 +31,68 @@ crash = "crash.log"
 ###################
 def main():
 	stopCnt = True								# initially stay in check loop
-	log1 = 0									# get log value
-	log2 = 0									# comparitive value
+	log1 	= 0									# get log value
+	log2 	= 0									# comparitive value
 	conPass = False								# connected successfully?
+	reCon 	= False								# reconnection flag
 	
-	## Handle - segmentation fault ##
-	faulthandler.enable()						# enable handler
-	
+	faulthandler.enable()						# enable fault handler
 	sensor1 = sens.sens1()						# instantuate device class
 		
 	## Initialise the Device ##
 	conPass = sensor1.DevConnect(ID)
 	sensor1.startup()
 
-	#while True:
 	try:
 		## CONNECTION PASS ##
-		if(conPass == True):			
-			#################
+		while conPass == True:
+			
 			## ----RUN---- ##
-			#################
 			sensor1.DevRun()					# Execute once per connection
-			
-			#--------------------------------------------#
-			
-			## RUN for 'x' Seconds ##
+						
+			## Stay Here While Running ##
 			while stopCnt == True:
-				#stopCnt += 1
 				time.sleep(3)					# check every 3 sec
 				log1 = sensor1.logVal()			# get log count value
 				print("Log: {}".format(log1))	# REMOVE
 				
-				## log1 higher: 		 ##
-				## - until log is zeroed ##
-				## - or RUN loop stops   ##
-				if log1 > log2:					# comparison
-					log2 = log1					# get new comp value
-				else:
-					stopCnt = False 			# break loop
-				
-			
-			print("GOT STUCK - RESTART")		# REMOVE
-			time.sleep(3.5)						# REMOVE
+				## CHECK RUNNING ##
+				if log1 > log2:	log2 = log1		# get new comp value
+				## GOT STUCK ##
+				else: stopCnt = False 			# break loop
 			
 			## CLOSE DEVICE ##
-			sensor1.DevClose()
-			print("Closed Device - FIRST")		# REMOVE
-			stopCnt = 0							# Clear
+			print("1. CLOSE DEVICE")			# REMOVE
 			time.sleep(1.5)						# REMOVE
+			sensor1.DevClose()					# 
 			
-					
+			## Didn't Seem to Help: SegFault ##
+			#print("2. CLOSE DEVICE AGAIN?")	# REMOVE
+			#time.sleep(3.5)					# REMOVE
+			#sensor1.DevClose()					# 
+			
+			## Attempt ReConnection ##
+			print("2. ATTEMPT RECONNECT")		# REMOVE
+			time.sleep(1.5)						# REMOVE
+			conPass = sensor1.DevReConnect(ID)	# IF FAILS BREAKS MAIN LOOP
+			## ReConnect Successful ##
+			if conPass == True: 
+				## Reset Values ##
+				stopCnt = True
+				log2 	= 0
 		
 		## END OF RUN ##
-		print("COMPLETE")						# REMOVE
+		print("RE-CONNECTION FAILED")			# REMOVE
 		
 	## System Error: ##
 	except OSError as err:
-		print ("\r\nOS ERROR {}".format(err))
 		sensor1.DevClose()
-		print("Device closed properly...")
+		print ("\r\nOS ERROR {}".format(err))
 		sys.exit()
 	## Value Error ##
 	except ValueError:
-		print("\r\nError with variable...")
 		sensor1.DevClose()
-		print("Device closed properly...")
+		print("\r\nError with variable...")
 		sys.exit()
 	## Keyboard Exit ##
 	except KeyboardInterrupt:
@@ -104,17 +101,19 @@ def main():
 		sys.exit(0)	
 	## NameError - Suggested ##
 	except NameError:
+		sensor1.DevClose()
 		print("\r\nNameError:")
+		sys.exit(0)	
 	## Unknown Error ##
 	except:
-		print("\r\nUnexpected Error:", sys.exc_info()[0])
 		sensor1.DevClose()
-		print("Device Closed Properly...")
+		print("\r\nUnexpected Error:", sys.exc_info()[0])
 		sys.exit() 
 	
 	finally:
 		## CLOSE DEVICE ##
 		sensor1.DevClose()						# Check already closed??
 		print("Closed Device - Final!!")
+		sys.exit(0)	
 
 if __name__ == "__main__":	main()

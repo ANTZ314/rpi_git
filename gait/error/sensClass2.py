@@ -172,9 +172,12 @@ class sens1:
 		self.sensorData["logs"] 	= self.cnt
 
 		self.cnt = self.cnt +1								# increment counter
-		if self.cnt >= 9999:
+		if self.cnt >= 2999:
 			self.cnt = 0									# avoid oversized value
-		#print(self.sensorData)								# View Dictionary
+		## print every 100th Data list ##
+		if self.cnt % 100 == 0:
+			print(self.sensorData)							# View Dictionary
+	
 	
 	## CHECK STILL RUNNING ##
 	def logVal(self):
