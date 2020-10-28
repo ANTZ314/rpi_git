@@ -20,7 +20,7 @@ Requirements:
 ------------------------------------------------------------------------------------
 
 Make sure that the Bluetooth hardware (adapter) is recognized by your OS:
->>> hcitool dev		<-- Bluetooth ON beforehand!
+>>> hcitool dev					<-- Bluetooth ON beforehand!
 
 Devices:
 	hci0	D4:3B:04:86:AB:59
