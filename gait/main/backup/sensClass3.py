@@ -3,6 +3,10 @@ Description:
 	My restructured class version of Aubry's class
 	Removed seemingly unnecessary lines & commented lines
 	Added comments & some exception catches
+	Split connect and startup commands into functions
+	Added error catches to run function
+	Limit Extreme Output Values
+	Shortened printed value of 'epoch'
 	Aim:
 	- locate cause of segmentation fault - memory?
 	- otherwise at fail -> reconnect
@@ -172,7 +176,7 @@ class sens1:
 		self.sensorData["logs"] 	= self.cnt
 
 		self.cnt = self.cnt +1								# increment counter
-		if self.cnt >= 2999:
+		if self.cnt >= 9999:
 			self.cnt = 0									# avoid oversized value
 		## print every 100th Data list ##
 		if self.cnt % 100 == 0:

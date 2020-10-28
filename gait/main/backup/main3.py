@@ -1,5 +1,5 @@
 """
-Date: 02-10-2020
+Date: prior 16-10-2020
 
 Description:
 	main function handling system errors and calling
@@ -16,8 +16,8 @@ python3 main.py
 -OR-
 python3 /home/pi/Documents/rpi_git/aubry/main/main.py
 """
-#import sensClass1 as sens						# Tutorial Version
-import sensClass2 as sens						# Aubry version
+import sensClass1 as sens						# Tutorial Version
+#import sensClass2 as sens						# Aubry version
 import sys, time								# system things
 import faulthandler								# guess what this handles
 
@@ -66,7 +66,7 @@ def main():
 			time.sleep(1.5)						# REMOVE
 			sensor1.DevClose()					# 
 			
-			## Didn't Seem to Help: SegFault ##
+			## Didn't Help with SegFault ##
 			#print("2. CLOSE DEVICE AGAIN?")	# REMOVE
 			#time.sleep(3.5)					# REMOVE
 			#sensor1.DevClose()					# 
