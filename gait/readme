@@ -4,16 +4,19 @@
 Reddy's Wifi:
 Bump in the night: Redflower999!
 
+----------------------------------------
+GITHuB Code Repo:
+----------------------------------------
 git pull https://github.com/ANTZ314/rpi_git.git
 
---------
+----------------------------------------
 Device:
---------
+----------------------------------------
 MetaMotionC - MMC
 
-------------
+----------------------------------------
 ReStart BLE:
-------------
+----------------------------------------
 sudo systemctl stop bluetooth
 sudo systemctl start bluetooth
 
