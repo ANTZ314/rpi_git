@@ -1,4 +1,8 @@
 """
+Date: 	16-10-2020
+
+Editted By:	A.Smith
+
 Description:
 	My restructured class version of Aubry's class
 	Removed seemingly unnecessary lines & commented lines

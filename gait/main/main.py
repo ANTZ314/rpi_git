@@ -1,5 +1,7 @@
 """
-Date: 16-10-2020
+Date: 	16-10-2020
+
+Editted By:	A.Smith
 
 Description:
 	main function handling system errors and calling
@@ -59,8 +61,7 @@ def main():
 			time.sleep(1.5)						# REMOVE
 			sensor1.DevClose()					# 
 			
-			## Attempt ReConnection ##
-			## - removed reconnect for now) ##
+			## Attempt ReConnection - removed reconnect for now ##
 			#print("2. ATTEMPT RECONNECT")		# REMOVE
 			#time.sleep(1.5)					# REMOVE
 			#conPass = sensor1.DevReConnect(ID)	# IF FAILS BREAKS MAIN LOOP
