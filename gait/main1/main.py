@@ -33,7 +33,7 @@ def main():
 	
 	faulthandler.enable()						# enable fault handler
 	sensor1 = sens.sens1()						# instantuate device class
-		
+	
 	## Initialise the Device ##
 	conPass = sensor1.DevConnect(ID)
 	sensor1.startup()
