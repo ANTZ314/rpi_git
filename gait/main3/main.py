@@ -1,23 +1,25 @@
 """
-Date: 	16-10-2020
-
-Editted By:	A.Smith
+Date: 		01-03-2021
+Editted:	A.Smith
 
 Description:
-	main function handling system errors and calling
-	bluetooth connectivity and run function in class
+	-> Main function handling system errors and calling
+		bluetooth connectivity and run function in class.
+	-> Run function is parallel to main code, so loops in 
+		line 53 unless connection is lost.
 
 Usage:
+cd /home/pi/Documents/rpi_git/aubry/main/
 python3 main.py
--OR-
-python3 /home/pi/Documents/rpi_git/aubry/main/main.py
 """
-import sensClass as sens						# Latest Version
+import sensClass1 as sens1						# Latest Version
+import sensClass2 as sens2						# Latest Version
 import sys, time								# system things
 import faulthandler								# guess what this handles
 
 ## Sensor ID ##
-ID = "FB:E2:B9:C5:60:AA"
+ID1 = "FB:E2:B9:C5:60:AA"
+ID2 = "xx:xx:xx:xx:xx:xx"
 crash = "crash.log"
 
 
@@ -32,10 +34,17 @@ def main():
 	reCon 	= False								# reconnection flag
 	
 	faulthandler.enable()						# enable fault handler
-	sensor1 = sens.sens1()						# instantuate device class
+	sensor1 = sens1.sens1()						# instantuate device class 1
+	sensor2 = sens2.sens2()						# instantuate device class 2
 	
-	## Initialise the Device ##
-	conPass = sensor1.DevConnect(ID)
+	## Initialise the 1st Device ##
+	conPass = sensor1.DevConnect(ID1)
+	sensor1.startup()
+
+	####
+
+	## Initialise the 2nd Device ##
+	conPass = sensor1.DevConnect(ID1)
 	sensor1.startup()
 
 	try:
@@ -61,10 +70,10 @@ def main():
 			time.sleep(1.5)						# REMOVE
 			sensor1.DevClose()					# 
 			
-			## Attempt ReConnection - removed reconnect for now ##
+			## Attempt ReConnection - temporarily removed 'reconnect' ##
 			#print("2. ATTEMPT RECONNECT")		# REMOVE
 			#time.sleep(1.5)					# REMOVE
-			#conPass = sensor1.DevReConnect(ID)	# IF FAILS BREAKS MAIN LOOP
+			#conPass = sensor1.DevReConnect(ID1)	# IF FAILS BREAKS MAIN LOOP
 			
 			##--------- END LOOP AT log=9999 ---------##
 			print("STOP LOGGING HERE...")		# REMOVE
