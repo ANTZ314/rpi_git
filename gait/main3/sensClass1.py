@@ -17,7 +17,7 @@ import csv											# write data to file
 
 
 class sens1:
-	filename = 'log1.csv'							# Log file - CSV format
+	filename = 'log1/log0.csv'							# Log file - CSV format
 	fileCnt = 0
 	
 	## INSTANTIATE THE CLASS ##
@@ -59,7 +59,7 @@ class sens1:
 						   "yaw"	:0,
 						   "logs"	:0}			# removed 'filename'
 		
-		self.filename = ("log{}.csv".format(str(self.fileCnt)))
+		self.filename = ("log1/log{}.csv".format(str(self.fileCnt)))
 		#self.checkLogFiles(self.filename)		# create/check log.txt file
 		print("Log File Done...")				# indentation error?
 
@@ -193,7 +193,7 @@ class sens1:
 			print(self.filename)
 			if self.cnt2 == 10:
 				self.fileCnt += 1							# increment file counter
-				self.filename = ("log{}.csv".format(str(self.fileCnt)))	# increment filename
+				self.filename = ("log1/log{}.csv".format(str(self.fileCnt)))	# increment filename
 				self.cnt2 = 0
 			self.cnt2 += 1
 	
@@ -226,4 +226,3 @@ class sens1:
 		#print("Cnt {}".format(self.cnt))
 		## Return Log Value ##
 		return self.cnt
-		

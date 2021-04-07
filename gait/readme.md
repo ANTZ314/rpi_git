@@ -4,9 +4,16 @@
 
 ###Description:
 
+* **scan.py** 
+	* Scan for devices and display IDs
+	* User selects MetaWear device ID no
+	* Connects -> checks characteristics & descriptors -> diconnects
+
 * **main1** - Primary single sensor test files. Produces separate folders of gait data at 'x' number of samples per file.
 
-* **main2** - main.py testing 3 classes by switching between the separate classes (sensClass1.py / sensClass2.py / sensClassA.py) via line 17. Each class has various test functions/methods
+* **main2** 
+	* main.py testing 3 different configurations by switching between the separate classes [main - line 17]
+	* Each class has various test functions/methods (_sensClass1.py_ / _sensClass2.py_ / _sensClassA.py_)
 
 * **main3** - Adapted _main1_ code to include multiple sensors (indipendent threads)
 
@@ -17,6 +24,13 @@
 	git pull https://github.com/ANTZ314/rpi_git.git
 
 ---
+###Device ID's Identified:
+[1] - F9:DC:59:47:98:6A
+[2] - C6:22:44:10:EE:D9
+[3] - 
+[4] - 
+
+--- 
 ###Device:
 
 MetaMotionC - MMC

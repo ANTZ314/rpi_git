@@ -1,4 +1,12 @@
-# usage: python scan_connect.py
+"""
+Description:
+Scan for devices and display IDs
+User selects MetaWear device ID no
+Connects -> checks characteristics & descriptors -> diconnects
+
+Usage: 
+sudo python scan_connect.py
+"""
 from __future__ import print_function
 from mbientlab.metawear import MetaWear
 from mbientlab.metawear.cbindings import *
