@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Author:
-	Antony Smith - T.S.E. [August 2020]
+	Antony Smith - T.S.E. [May 2021]
 
 Description:
 	GCP MQTT to SIATIK GC-Platform
@@ -22,7 +22,7 @@ Notes:
 			=> roots.pem
 			=> rsa_private.pem
 
-USAGE:
+USAGE:		
 	python main.py
 
 Primary Functions:
@@ -40,14 +40,11 @@ Primary Functions:
 	Upload data to Google Cloud IoT-Core [SIATIK]		- [complete]
 	Indicator LED (counting=GREEN)						- [complete]
 
-Change from main22:
-	Time-Out "Try Again" message						- [complete]
-	Scan wait until vid window is open					- [complete]
-	Can't scan same barcode twice						- [complete]
-	Can't change stage in COUNT mode					- [complete]
+Change from main23:
 	Stage selection persistent (after boot)				- [complete]
-	Sleep mode button inactive?							- [incomplete]
+	"LAST PUBLISH" was skipped - Fixed					- [complete]
 	Check video frame - FULL SCREEN						- [incomplete]
+	Sleep mode button inactive?							- [incomplete]
 	Clear message - [INFO] network error				- [incomplete]
 
 --------------------------------------
@@ -132,6 +129,7 @@ def main():
 	global strtstp									# (createJSON)	- project start or stop
 	global staffID									# (createJSON)	- Extracted Staff ID
 	global pubNow									# Publish 		- flag
+	global finPub									# Final Publish - flag
 	global fail										# ???
 	
 	lay=[]											# layering windows
@@ -275,7 +273,6 @@ def main():
 			## QR SCANNER ##
 			################
 			def QR_Scan():
-				global info 									# Uodate Info Bar
 				global qrData									# globalise QR Data
 				global staffID									# Extracted Staff ID
 				global qr_time									# QR Scan timed out before complete
@@ -288,32 +285,12 @@ def main():
 				KitOnce	  = False								# Scan each QR code once only
 				StffOnce  = False								# Scan each QR code once only
 				
-				## Retrieve stored Stage & Update ##
-				try:
-					## Read dat and print it ##
-					with open(stage_file, "r") as f:
-						data = f.read()							# Get the Stage
-						dataDict['STAGE'] = data 				# Store to Stage feild
-						f.close()								# Close
-						print("Closed file")
-				except:
-						## If the file didn't exist?!? ## 
-						print("Created with Stage: SETUP")		# REMOVE
-						f = open(stage_file,"w")					# Create in Append
-						f.write("SETUP")						# Append string
-						# Store to Stage feild
-						# Update Info Bar
-						f.close()								# Close
-
 				## initialize video stream & warm up camera sensor
 				print("[INFO] starting video stream...")		# REMOVE
 				vs = VideoStream(usePiCamera=True).start()
 				time.sleep(2.0)									# Allow video to stabalise
 				cv2.namedWindow(winName)
 				cv2.moveWindow(winName, 1,1)
-				
-				## Wait for the window to open properly before scanning ##
-				#time.sleep(5.0)
 
 				## Loop over the frames from the video stream #
 				## Time-Out after 35 secs ##
@@ -405,7 +382,7 @@ def main():
 						qr_time = True							# Completed successfully
 						break
 					## -OR- time-out will break loop ##
-				print(done)
+				
 				## Check for time-out break -  ##
 				if done == "n":
 					## Message: SCAN FAILED ##
@@ -430,26 +407,21 @@ def main():
 				vs.stop()										# stop video stream
 				cv2.destroyAllWindows()							# NOT destroying??
 				win.lift()										# Put GUI on the top
-
-				## Update info bar in 'main.py' ##
-				info = "[INFO] stage - {}".format(dataDict['STAGE'])# New 'info' message
-				update_label()									# Update GUI Info label_4
-				#print("STAGE: " + dataDict['STAGE'])			# REMOVE
 				
 			
 			#####################
 			## GESTURE COUNTER ##
 			#####################
 			def get_gesture():
-				global strtstp				# Start/Stop (time) Flag
-				global Cnt					# Double defined?
-				global GestDone				# Exit Gesture loop
-				global pubNow				# Publish trigger
-				Cnt = 0						# Double defined?
-				direct = 'none'				# Direction of swipe
+				global Cnt									# Double defined?
+				global GestDone								# Exit Gesture loop
+				global pubNow								# Publish trigger
+				Cnt = 0										# Double defined?
+				direct = 'none'								# Direction of swipe
 
-				pubNow   = False			# already set False in 'handledata'
-				GestDone = False			# initialise on function call
+				pubNow   = False							# already set False in 'handledata'
+				finPub	 = False							# Final Publish - flag
+				GestDone = False							# initialise on function call
 				
 				dirs = {
 					APDS9960_DIR_NONE:  "none",
@@ -465,8 +437,7 @@ def main():
 					apds.setProximityIntLowThreshold(80)	# No Change?
 					apds.setProximityIntHighThreshold(110)	# No Change?
 						
-					print("COUNT MODE:")					# REMOVE
-					print("===========")					# REMOVE
+					print("~~COUNT MODE~~")					# REMOVE
 					apds.enableGestureSensor()
 					apds.setGestureEnterThresh(100)
 					apds.setGestureExitThresh(110)
@@ -506,30 +477,23 @@ def main():
 							update_label()
 
 							## Publish on swipe ##
-							#handleData(Cnt)				# running as own thread now
 							pubNow = True					# Pull the trigger - publish flag
 						
 
 				## Do before exiting Gesture Mode ##
 				finally:
-					## Publish Stop Time ##
-					strtstp = 2								# stop time
-					#handleData(Cnt)							# create & publish
-					pubNow = True								# May have already exitted loop?
-					## Zero Counter - On Next Count ##
-					Cnt = 0 								# zero the count value
 					update_label()							# update the GUI label
-					print("Last PUBLISH")					# REMOVE 
 
 
 			##############################
 			## BUTTON: EMPLOYEE ID SCAN ##
 			##############################
 			def btn_start():
-				global strtstp										# Start/Stop (time) Flag
+				global strtstp										# Start/Stop (time) - Flag
 				## Gesture counter ##
-				global GestDone										# Exit Gesture mode flag
+				global GestDone										# Exit Gesture mode - flag
 				global Cnt											# make global again?
+				global finPub										# Final Publish 	- flag
 				## ID Scanner ##
 				global btn_state1									# changed to tri-state
 				global info											# GUI info bar
@@ -544,7 +508,7 @@ def main():
 				if btn_state1 == 0:
 					## Start QR Scan ##
 					QR_Scan()										# Scan (2x) QR Codes
-					#fake_scan()									## TEST FUNCTION - REMOVE ##
+					#fake_scan()									## REMOVE - TEST FUNCTION ##
 					
 					if qr_time == True:
 						## Update GUI Labels ##
@@ -604,7 +568,10 @@ def main():
 				elif btn_state1 == 2:
 					bigButton["text"] = "START\nSCAN"
 					info = "[INFO] Counting Complete"
-										
+					
+					finPub = True									# Final Publish - STOP
+					strtstp = 2										# update stop time
+
 					## If Gesture Thread is Running ##
 					if t1.isAlive():								#if thr1 == 2:
 						thr1 = 0									# Clear thread flag
@@ -638,38 +605,74 @@ def main():
 				global GestDone											# loop publish with gesture sensor
 				global pubNow											# Publish count flag
 				global Cnt												# Current count value
-				
+				global finPub											# Final Publish
+
 				pubNow = False											# clear flag
 				CntCpy = 0												# Keep track of publishes
 				
-				## Backup Count value - unexpected power-down ##
-				if Cnt != 0:
-					failCheck(Cnt)										# No need for stored count
+				try:
+					## Backup Count value - unexpected power-down ##
+					if Cnt != 0:
+						failCheck(Cnt)										# No need for stored count
 
-				## Continuously loop publisher ##
-				while GestDone == False:								# same as gesture loop ? ? ?
+					## Continuously loop publisher ##
+					while GestDone == False:								# same as gesture loop ? ? ?
+						## If publish triggered ##
+						if pubNow == True:
+							## Keep checking for count difference ##
+							if CntCpy == (Cnt-1):							# if same, publish current count
+								## publish the latest 'Cnt' value ##
+								iotJSON = createJSON(qrData, Cnt)			# Convert Data to JSON format
+								CntCpy  = Cnt 								# Copy last published count value
+								pubNow = False								# count matches -> Exit publish
+								
+							## until caught up with current/final count value ##
+							else:											# if diff, publish until same
+								## publish the previous counts ##
+								iotJSON = createJSON(qrData, CntCpy)		# Convert Data to JSON format
+								CntCpy += 1									# increment until equal to 'Cnt'
+							
+							## HUNGOVER!!! ##
+							if CntCpy > Cnt:
+								pubNow = False								# count matches -> Exit publish
+
+							## Publish JSON Data to IoT Core ##
+							iot_publish(iotJSON, dataDict['STAGE'])
+							#print("\nPublish: {}".format(iotJSON))			# REMOVE
+
+							## Confirm Published - Once per Count ##
+							GREEN.off()
+							RED.on()
+							time.sleep(0.2)									# blink
+							RED.off()
+							GREEN.on()
+							#print("[INFO] PUBLISHED")						# REMOVE
+				## Final STOP_TIME update & Publish ##
+				finally:
 					## If publish triggered ##
-					if pubNow == True:
+					if finPub == True:
+						finPub = False									# Clear flag
 						## Keep checking for count difference ##
 						if CntCpy == (Cnt-1):							# if same, publish current count
 							## publish the latest 'Cnt' value ##
 							iotJSON = createJSON(qrData, Cnt)			# Convert Data to JSON format
 							CntCpy  = Cnt 								# Copy last published count value
 							pubNow = False								# count matches -> Exit publish
-							
+								
 						## until caught up with current/final count value ##
 						else:											# if diff, publish until same
 							## publish the previous counts ##
 							iotJSON = createJSON(qrData, CntCpy)		# Convert Data to JSON format
 							CntCpy += 1									# increment until equal to 'Cnt'
-						
+							
 						## HUNGOVER!!! ##
 						if CntCpy > Cnt:
 							pubNow = False								# count matches -> Exit publish
 
 						## Publish JSON Data to IoT Core ##
 						iot_publish(iotJSON, dataDict['STAGE'])
-						#print("\nPublish: {}".format(iotJSON))			# REMOVE
+
+						Cnt = 0 										# zero the count value
 
 						## Confirm Published - Once per Count ##
 						GREEN.off()
@@ -677,11 +680,11 @@ def main():
 						time.sleep(0.2)									# blink
 						RED.off()
 						GREEN.on()
-						print("[INFO] PUBLISHED...")					# REMOVE
+						#print("[INFO] LAST PUBLISH")
+					else:
+						print("DIDN'T PUBLISH??")
 
-				print("[INFO] Exit Publish Loop...")					# REMOVE
 
-			
 			#####################
 			## JSON DATA CLASS ##
 			#####################
@@ -726,15 +729,31 @@ def main():
 					dataDict['STAFF_ID'] = staffID					# Update Staff ID		- on startup
 					dataDict['DATE'] = current_date					# insert current date
 
+					## Retrieve stored STAGE ##
+					try:
+						## Read dat and print it ##
+						with open(stage_file, "r") as f:
+							data = f.read()							# Get the Stage
+							dataDict['STAGE'] = data 				# Store to Stage feild
+							f.close()								# Close
+					except:
+							## If the file didn't exist ##			# Should never come here!! 
+							#print("Created with Stage: SETUP")		# REMOVE
+							f = open(stage_file,"w")				# Create in Append
+							f.write("SETUP")						# Append string
+							f.close()								# Close
+
 				## @start click ##
 				if strtstp == 0:
 					strtstp = 1
 					dataDict['START'] = current_time				# insert current time
 					dataDict['STOP']  = current_time				# blank stop time
+					print("START: " + dataDict['START'])			# REMOVE
 				## @stop click ##
-				elif strtstp == 2:
+				elif strtstp == 2:									# zeroed again in start count click
 					dataDict['STOP']  = current_time				# insert current time
-
+					print("STOP: " + dataDict['STOP'])				# REMOVE
+				
 				## Continuously Update these: ##
 				dataDict['COUNT'] = Cnt								# Update board count 	- every count
 				dataDict['TIME'] = current_time						# insert upload time
@@ -744,7 +763,7 @@ def main():
 				OmniData1 = OmniData()								# get object characteristics
 				OmniData1.CLIENT 	= dataDict['CLIENT']
 				OmniData1.PROJECT 	= dataDict['PROJECT']
-				OmniData1.STAGE 	= dataDict['STAGE']				# No longer update from QR
+				OmniData1.STAGE 	= dataDict['STAGE']				# No longer updated from QR_Code
 				OmniData1.BOARDS 	= dataDict['BOARDS']
 				OmniData1.PANELS 	= dataDict['PANELS']
 				OmniData1.COUNT 	= dataDict['COUNT']
