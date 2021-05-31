@@ -41,6 +41,7 @@ Primary Functions:
 	Indicator LED (counting=GREEN)						- [complete]
 
 Change from main23:
+	Start/Stop times not seperate on Dash??				- [incomplete]
 	Stage selection persistent (after boot)				- [complete]
 	"LAST PUBLISH" was skipped - Fixed					- [complete]
 	Check video frame - FULL SCREEN						- [incomplete]
@@ -273,6 +274,7 @@ def main():
 			## QR SCANNER ##
 			################
 			def QR_Scan():
+				global firstScan				
 				global qrData									# globalise QR Data
 				global staffID									# Extracted Staff ID
 				global qr_time									# QR Scan timed out before complete
@@ -284,6 +286,7 @@ def main():
 				qr_time   = False								# initially unsuccessful
 				KitOnce	  = False								# Scan each QR code once only
 				StffOnce  = False								# Scan each QR code once only
+				firstScan = 0					# update first data
 				
 				## initialize video stream & warm up camera sensor
 				print("[INFO] starting video stream...")		# REMOVE
@@ -675,14 +678,14 @@ def main():
 						Cnt = 0 										# zero the count value
 
 						## Confirm Published - Once per Count ##
-						GREEN.off()
-						RED.on()
-						time.sleep(0.2)									# blink
-						RED.off()
-						GREEN.on()
-						#print("[INFO] LAST PUBLISH")
+						#GREEN.off()
+						#RED.on()
+						#time.sleep(0.2)									# blink
+						#RED.off()
+						#GREEN.on()
+						#print("[INFO] LAST PUBLISH")					# REMOVE
 					else:
-						print("DIDN'T PUBLISH??")
+						print("DIDN'T PUBLISH??")						# Should NEVER come here
 
 
 			#####################
@@ -737,8 +740,7 @@ def main():
 							dataDict['STAGE'] = data 				# Store to Stage feild
 							f.close()								# Close
 					except:
-							## If the file didn't exist ##			# Should never come here!! 
-							#print("Created with Stage: SETUP")		# REMOVE
+							## If the file didn't exist ##			# Should never come here!!
 							f = open(stage_file,"w")				# Create in Append
 							f.write("SETUP")						# Append string
 							f.close()								# Close
@@ -748,11 +750,9 @@ def main():
 					strtstp = 1
 					dataDict['START'] = current_time				# insert current time
 					dataDict['STOP']  = current_time				# blank stop time
-					print("START: " + dataDict['START'])			# REMOVE
 				## @stop click ##
 				elif strtstp == 2:									# zeroed again in start count click
 					dataDict['STOP']  = current_time				# insert current time
-					print("STOP: " + dataDict['STOP'])				# REMOVE
 				
 				## Continuously Update these: ##
 				dataDict['COUNT'] = Cnt								# Update board count 	- every count
