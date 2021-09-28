@@ -2,60 +2,24 @@
 # -*- coding: utf-8 -*-
 """
 Author:
-	Antony Smith - T.S.E. [June 2021]
+	Antony Smith - T.S.E. [July 2020]
 
-USAGE:		
-	python main.py
-
-Description:
+'Fake' Description:
+	THIS VERSION IS FOR 4 DEMO UNITS
 	GCP MQTT to SIATIK GC-Platform
-	Main control GUI for Omnigo IoT project
-	Raspberry Pi Zero + PiCamera + APDS9960
+	Gesture & QR Scan bypassed for automatic functions
+	Hardware: 
+		Raspberry Pi Zero
+		PiCamera
+		APDS9960
 
-Notes:
-	GUI EXIT CODE: 	3529# ('*' to Delete)
-	STAGE CODE: 	2580# ('*' to Delete)
-	QR-Code scanner:
-		-> Exits after 3x confirmed QR reads
-		-> Time-Out after 35 seconds
-		-> 'q' to exit prematurely
-	GCP connectivity requirements:
-		-> 'jwt_maker.py' to create JWT security key
-		-> ssl security files: 
-			=> roots.pem
-			=> rsa_private.pem
+Note:
+	No longer update count value to 'BOARD' field 	- [line 538]
+	Publish on every 'swipe'						- [line ]
+	Extended time between 'swipes' to 4 seconds		- [line ]
 
-Primary Functions:
-	GUI functionality:
-		-> Widget placement + Colour schemes			- [complete]
-		-> Real-time label udpates (count/info)			- [complete]
-		-> Multi-Threading								- [complete]
-		-> multiple windows in parallel operation		- [complete]
-	APDS9960 gesture sensor counting method 			- [complete]
-	PiCamera & OPENCV QR Code reading					- [complete]
-	Scan Kit & Staff ID + storage method				- [complete]
-	Exit code required to leave GUI						- [complete]
-	Drop-down menu stage selector						- [complete]
-	JSON data format conversion							- [complete]
-	Upload data to Google Cloud IoT-Core [SIATIK]		- [complete]
-	Indicator LED (counting=GREEN)						- [complete]
-
-Change from main23:
-	Project over midnight - update Date 				- [complete]
-	Start/Stop times not seperate on Dash??				- [complete]
-	Stage selection persistent (after boot)				- [complete]
-	"LAST PUBLISH" was skipped - Fixed					- [complete]
-	Check video frame - FULL SCREEN						- [incomplete]
-	Sleep mode button inactive?							- [incomplete]
-	Clear message - [INFO] network error				- [incomplete]
-
---------------------------------------
-FINAL CLEANUP:
-	Remove all unneccessary prints
-	Check for unused variables/flags
-	Remove commented lines
-	Remove test functions
---------------------------------------
+USAGE:
+	python fake_main1.py
 """
 ###################
 # import packages #
@@ -71,11 +35,10 @@ import threading						# Multi-Threading
 import multiprocessing
 
 ## GENERAL MAINTENANCE ##
-import sys, os							# Possibly remove ? ? ?
+import sys								# Possibly remove ? ? ?
 import time								# time travel
 import traceback						# Error logging
 import datetime							# Get real-time data
-from gpiozero import LED 				# Import GPIO library
 
 ## 	QR CODE IMPORTS ##
 from picamera import PiCamera			# Testing the Camera
@@ -93,15 +56,15 @@ import smbus
 import json								# JSON conversion functions
 import jwt								# Create JSON security token 
 import paho.mqtt.client as mqtt			# MQTT connectivity
-import requests							# 
-import base64							# 
+import requests							# siatik publish
+import base64							# siatik publish
 
 
 ###################
 ##  GLOBAL DEFS  ##
 ###################
 btn_state1 = 0										# changed to tri-state (0/1/2)
-stage_file = "/home/pi/main/stage.txt"				# Persistent stage selection
+csv_file = "barcodes.csv"							# guess what this is?
 OptionList = ["SETUP","THRU","SMT","INSP","EXIT"] 	# Drop Down Menu Options
 
 ## Gesture Sensor Hardware Requirements ##
@@ -109,48 +72,37 @@ port = 1
 bus  = smbus.SMBus(port)
 apds = APDS9960(bus)
 
-## Define Indicator LED BCM.GPIO pins ##
-## NOTE: GPIO 12/13/16 are unusable?? ##
-RED 	= LED(5)									# BUSY
-GREEN 	= LED(6)									# FREE
-
 
 ###################
 ## MAIN FUNCTION ##
 ###################
 def main():
-	global thr1										# Gest_Count 	- flag (Thread1) 
-	global Cnt										# PCB count 	- integer
-	global GestDone									# Exit Gesture 	- flag
-	global QRDone									# Exit QR Scan 	- flag
-	global pin	 									# Exit Code 	- string
-	global CodeDone									# Exit Code 	- flag
-	global qrData									# Get QR Data 	- string
+	global thr1										# thread flag
+	global Cnt										# PCB count value
+	global GestDone									# Exit Gesture flag
+	global QRDone									# Exit QR Scan flag
+	global pin	 									# Exit Code Value
+	global CodeDone									# Exit Code - flag
+	global qrData									# Get QR Data
 	global iotJSON									# Converted to JSON format
-	global firstScan								# (createJSON)	- store certain data on first scan
-	global strtstp									# (createJSON)	- project start or stop
-	global staffID									# (createJSON)	- Extracted Staff ID
-	global pubNow									# Publish 		- flag
-	global finPub									# Final Publish - flag
-	global fail										# ???
+	global firstScan								# (createJSON) - store certain data on first scan
+	global strtstp						# (createJSON) - project start or stop
+	global staffID									# (createJSON) - Extracted Staff ID
 	
-	lay=[]											# layering windows
-	CodeDone 	= False								# Exit Code 	- negative
-	pin  		= ''								# Exit Code 	- blank string
-	QRDone   	= False								# QR Scan 		- flag
-	Cnt 		= 0									# PCB Counter start value
-	info 		= "feedback..."						# GUI feedback information - OPTIONAL
-	ID_match 	= 0									# ID Scan - initial staff ID status
-	qrData 		= "data from qr code"				# initialise to string format
-	iotJSON 	= "upload"							# initialise to string format
-	firstScan 	= 0									# initialise for 1st data update
-	staffKit 	= 0									# initialise to kit_ID 1st
-	failFile 	= '/home/pi/main/fail.txt'			# If count is interupted - continue
-	finPub		= False								# what the fuck?
+	lay=[]											# layering windows??
+	CodeDone = False								# Exit Code - negative
+	pin  = ''										# Exit Code - blank string
+	QRDone   = False								# QR Scan 		- flag
+	Cnt = 0											# PCB Counter start value
+	info = "feedback..."							# GUI feedback information - OPTIONAL
+	ID_match = 0									# ID Scan - initial staff ID status
+	qrData = "data from qr code"					# initialise to string format
+	iotJSON = "upload"								# initialise to string format
+	firstScan = 0									# initialise for 1st data update
+	staffKit = 0									# initialise to kit_ID 1st
 	
 	## GCP PROJECT VARIABLES - SIATIK ##
-	#ssl_private_key 		 = './certs/rsa.pem'	# '<ssl-private-key-filepath>'
-	ssl_private_key 		 = '/home/pi/main/certs/rsa.pem'# '<ssl-private-key-filepath>'
+	ssl_private_key 		 = '/home/pi/demo/certs/rsa.pem'	# '<ssl-private-key-filepath>'
 	ssl_algorithm            = 'RS256'              # '<algorithm>' -> RS256 or ES256
 	project_id               = 'omnigo'             # '<GCP project id>'
 	
@@ -159,8 +111,8 @@ def main():
 	dataDict = {'CLIENT'	: 'xxx',				# Client Name
 				'PROJECT'	: '0',					# Project ID
 				'STAGE'		: 'xxx',				# Operational Stage (setup/smt/thru/insp)
-				'BOARDS'	: '0',					# Total Number PC-Boards
-				'PANELS'	: '0',					# Total Number of panels
+				'BOARDS'	: '0',					# Number PC-Boards
+				'PANELS'	: '0',					# Number of panels
 				'COUNT'		: '0',					# Actual Board Count
 				'STAFF_ID'	: '0',					# Staff member ID number
 				'DATE'		: '00-00-2020',			# Project start date
@@ -181,30 +133,27 @@ def main():
 			###############################
 			def fake_scan():
 				ender = 0
-				global QRDone				# Exit Scan loop
+				global QRDone						# Exit Scan loop
 				global qrData
 				global staffID
 				global firstScan
 				global projStat
-				global qr_time
 				
 				## Button click to exit? ##
 				while QRDone == False:
 					ender += 1
-					print("..-SCANNING-..")
+					print("...SCANNING...")
 					time.sleep(1)
 					if ender == 3:
 						QRDone = True
 				
-				qrData = "CLIENT=Omnigo,PROJECT=123456,STAGE=SETUP,BOARDS=1000,PANELS=50,COUNT=0,STAFF_ID=357,TIME=00:00,DATE=01-01-2000,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321"
+				qrData = "CLIENT=SONY,PROJECT=456123,STAGE=THRU,BOARDS=350,PANELS=35,STAFF_ID=159,TIME=00:00,DATE=01-01-2000,START=00:00,STOP=00:00,REASON=NULL,SERIAL=456123789"
 				staffID = 357	# fake staff ID
 				firstScan = 0	# update first data
 				print("Extracted Data String")
 				ender = 0		# Go Again
 				QRDone = False	# Go Again
-				qr_time = True
 			
-
 			###############################
 			## DEMO FUNCTION - TEMPORARY ##
 			###############################
@@ -214,6 +163,7 @@ def main():
 				global strtstp				# Start Stop times
 				
 				Cnt = 0						# initialised
+				sendCnt = 0					# Could make global?
 				strtstp = 0					# start time
 				GestDone = False
 
@@ -221,82 +171,41 @@ def main():
 				while GestDone == False:
 					## ~SWIPE~ ##
 					Cnt += 1				# increment board count
-					
 					## Continuously update GUI Label ##
 					update_label()
-						
-					## ON EVERY COUNT ##
-					handleData(Cnt)
-					time.sleep(5)			# every 3 seconds
+					## PUBLISH ON EVERY'SWIPE' ##
+					#print("publish {}".format(Cnt))
+					handleData(Cnt)			# 'Cnt' not needed anymore
+					## 12 updates a minute ##
+					time.sleep(5)			
 				
-				time.sleep(1)				# wait
-				print("Last PUBLISH")		# REMOVE
+				#print("Last PUBLISH")		# REMOVE
 				## Publish Stop Time ##
 				strtstp = 2					# stop time
 				handleData(Cnt)				# create & publish
 				print("Count Complete")		# REMOVE
 			
 			
-			#########################
-			## COUNT FAILURE CHECK ##
-			#########################
-			def failCheck(Cnt):
-				exists = False										# file exists or not?
-				contCnt = 'x'										# stored json string
-				
-				## Try to read file ##
-				try:												# Skip if file doesn't exist
-					file = open(failFile, 'r') 						# Open to read file
-					contCnt = file.read()							# read file contents
-					#print("STORED: {}".format(contCnt))			# REMOVE
-					file.close()									# Close the file
-				## Create - No File to Read ##
-				except:
-					exists = True									# Avoid writing twice if file exists
-					contCnt = '0'									# Set to Zero
-					#print("STORE 0")								# REMOVE
-					file = open(failFile,"w")						# Create/Open file then write data 
-					file.write(contCnt) 							# write first zero
-					file.close()									# Exit the opened file
-				## Seen File - Now overwrite ##
-				if exists == False:									# overwrite data after printing contents
-					if  Cnt != 0:									# Only if count is already going
-						#print("STORE {}".format(str(Cnt)))			# REMOVE
-						file = open(failFile,"w")					# Open file then Overwrite data 
-						file.write(str(Cnt))						# Write new string
-						file.close()								# Exit the opened file
-				## Notify File Created - ROMOVE ##
-				#else:												# 
-				#	print "Start Click -> Create New Fail File!"	# REMOVE
-				
-				return contCnt										# Return last count value
-			
-			
 			################
 			## QR SCANNER ##
 			################
 			def QR_Scan():
-				global firstScan				
 				global qrData									# globalise QR Data
 				global staffID									# Extracted Staff ID
-				global qr_time									# QR Scan timed out before complete
-				init_time = time.time()							# No. of secs since 1 Jan 1970
-				winName   = "SCAN-ID"							# Name the video window
-				scnCnt 	  = 0									# Number of ID confirmations
-				done 	  = "n"									# which scan is complete
-				staffKit  = 0									# Which ID - kit_ID[0] / Staff_ID[1]
-				qr_time   = False								# initially unsuccessful
-				KitOnce	  = False								# Scan each QR code once only
-				StffOnce  = False								# Scan each QR code once only
-				firstScan = 0					# update first data
+				init_time = time.time()							# no. of secs since 1 Jan 1970
+				winName = "SCAN-ID"								# name the video window
+				scnCnt = 0										# Number of ID confirmations
+				done = "kit"									# which scan is complete
+				staffKit = False								# Which ID - kit_ID[0] / Staff_ID[1]
+				
 				
 				## initialize video stream & warm up camera sensor
-				print("[INFO] starting video stream...")		# REMOVE
+				print("[INFO] starting video stream...")
 				vs = VideoStream(usePiCamera=True).start()
 				time.sleep(2.0)									# Allow video to stabalise
 				cv2.namedWindow(winName)
 				cv2.moveWindow(winName, 1,1)
-
+								
 				## Loop over the frames from the video stream #
 				## Time-Out after 35 secs ##
 				while time.time()-init_time < 35:
@@ -305,11 +214,7 @@ def main():
 					frame = vs.read()
 					frame = imutils.rotate(frame, 90)			# rotate 90 due to camera mount
 					frame = imutils.resize(frame, width=400)
-					
-					## Fullscreen Window ##
-					cv2.namedWindow(winName,cv2.WND_PROP_FULLSCREEN)
-					cv2.setWindowProperty(winName,cv2.WND_PROP_FULLSCREEN,1)
-					
+				 
 					## find & decode the barcodes in each frame
 					barcodes = pyzbar.decode(frame)
 
@@ -319,16 +224,18 @@ def main():
 						(x, y, w, h) = barcode.rect
 						cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
 				 
-						## Barcode data = bytes object, therefore
-						## onvert to string to draw it on output image
+						## the barcode data is a bytes object so if we want to draw it
+						## on our output image we need to convert it to a string first
 						barcodeData = barcode.data.decode("utf-8")
 						barcodeType = barcode.type
 				 
 						## Indicate Which barcode is found ##
-						if staffKit == 0:
-							text = "- FIRST ID -"
+						if staffKit == False:
+							#staffKit = 1						# toggle to staff
+							text = "- KIT ID -"
 						else:
-							text = "- SECOND ID -"
+							#staffKit = 0						# toggle back to kit
+							text = "- STAFF ID -"
 						
 						cv2.putText(frame, text, (x, y - 10),
 							cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -338,25 +245,17 @@ def main():
 						## Count QR Reads ##
 						scnCnt += 1	
 						
-						## If QR Code is Read 4 times ##
-						if scnCnt == 4:
-							## Kit ID Found ##
-							if len(barcodeData) > 10:
-								#print("Kit Data Found!!")		# REMOVE
-								qrData = barcodeData			# Store Kit ID
-								if KitOnce == False:
-									KitOnce = True				# Can't come back here
-									staffKit += 1				# Increment
-							## Staff ID Found ##
-							else:
-								#print("Staff ID found!!")		# REMOVE
-								staffID = barcodeData			# store staff ID
-								if StffOnce == False:
-									StffOnce = True				# Can't come back here
-									staffKit += 1				# Increment
-							## If both ID's Scanned then Break ##
-							if staffKit == 2:
+						## If QR Code is Read 3 times ##
+						if scnCnt == 5:
+							#scnCnt = 0							# clear the counter
+							if done == "kit":
+								qrData = barcodeData			# Copy QR Data
+								done = "staff"					# exit the loop
+								staffKit = True
+							elif done == "staff":
+								staffID = barcodeData			# store staff_ID
 								done = "y" 						# exit scan mode
+								staffKit = False
 							
 							## QR Image - CHANGE INDICATOR ##
 							font = cv2.FONT_HERSHEY_SIMPLEX
@@ -364,8 +263,8 @@ def main():
 							textsize = cv2.getTextSize(text, font, 1, 2)[0]
 							
 							## Get coords based on boundry ##
-							textX = (frame.shape[1] - textsize[0]) /4
-							textY = (frame.shape[0] - textsize[1]) /2	# was 2
+							textX = (frame.shape[1] - textsize[0]) /2
+							textY = (frame.shape[0] - textsize[1]) /2
 							
 							## Add text centered in image ##
 							cv2.putText(frame, text, (textX, textY), font, 2, (0, 255, 0), 3)
@@ -375,43 +274,21 @@ def main():
 					key = cv2.waitKey(1) & 0xFF
 					
 					# Pause for QR swap ##
-					if scnCnt == 4:
+					if scnCnt == 5:
 						time.sleep(3)		
 						scnCnt = 0	
 				 
 					## if the `q` key was pressed, break from the loop ##
 					if key == ord("q"):
 						break
-					## if both ID's were confirmed 4 times ##
+					## if ID confirmed 3 times ##
 					elif done == "y":
-						qr_time = True							# Completed successfully
+						#print(qrData)							# REMOVE
+						#print(staffID)							# REMOVE
 						break
-					## -OR- time-out will break loop ##
 				
-				## Check for time-out break -  ##
-				if done == "n":
-					## Message: SCAN FAILED ##
-					font = cv2.FONT_HERSHEY_SIMPLEX
-					text = "~TIME-OUT~"
-					textsize = cv2.getTextSize(text, font, 1, 2)[0]
-							
-					## Get coords based on boundry ##
-					textX = (frame.shape[1] - textsize[0]) /4
-					textY = (frame.shape[0] - textsize[1]) /2	# was 2
-							
-					## Add text centered in image ##
-					cv2.putText(frame, text, (textX, textY), font, 1, (218,112,214), 2)
-
-					## Show the last output frame ##
-					cv2.imshow(winName, frame)
-					key = cv2.waitKey(1) & 0xFF
-					time.sleep(2)								# wait 2 seconds
-
-				#print("KIT: " + qrData)
-				#print("STAFF: "+ staffID)
-
 				## close the output CSV file do a bit of cleanup ##
-				print("[INFO] cleaning up...")					# REMOVE
+				print("[INFO] cleaning up...")
 				vs.stop()										# stop video stream
 				cv2.destroyAllWindows()							# NOT destroying??
 				win.lift()										# Put GUI on the top
@@ -421,15 +298,13 @@ def main():
 			## GESTURE COUNTER ##
 			#####################
 			def get_gesture():
-				global Cnt									# Double defined?
-				global GestDone								# Exit Gesture loop
-				global pubNow								# Publish trigger
-				Cnt = 0										# Double defined?
-				direct = 'none'								# Direction of swipe
+				global Cnt					# Double defined?
+				global GestDone				# Exit Gesture loop
+				Cnt = 0						# Double defined?
+				direct = 'none'				# Direction of swipe
+				sendCnt = 0					# Could make global?
 
-				pubNow   = False							# already set False in 'handledata'
-				finPub	 = False							# Final Publish - flag
-				GestDone = False							# initialise on function call
+				GestDone = False			# initialise on function call
 				
 				dirs = {
 					APDS9960_DIR_NONE:  "none",
@@ -441,16 +316,12 @@ def main():
 					APDS9960_DIR_FAR:   "far",
 					}
 				try:
-					## Set the proximity threshold ##
-					apds.setProximityIntLowThreshold(80)	# No Change?
-					apds.setProximityIntHighThreshold(110)	# No Change?
+					# Set the proximity threshold
+					apds.setProximityIntLowThreshold(50)
 						
-					print("~~COUNT MODE~~")					# REMOVE
+					print("COUNT MODE:")					# REMOVE
+					print("===========")					# REMOVE
 					apds.enableGestureSensor()
-					apds.setGestureEnterThresh(100)
-					apds.setGestureExitThresh(110)
-					apds.clearAmbientLightInt()
-					apds.setGestureLEDDrive(3)
 					
 					## EXIT the Gesture Thread ? ##
 					while GestDone == False:				# while True:
@@ -483,13 +354,22 @@ def main():
 							
 							## Continuously update GUI Label ##
 							update_label()
-
-							## Publish on swipe ##
-							pubNow = True					# Pull the trigger - publish flag
+							
+							## ON EVERY 3RD COUNT ##
+							sendCnt += 1
+							if sendCnt == 3:
+								sendCnt = 0
+								handleData(Cnt)
 						
 
 				## Do before exiting Gesture Mode ##
 				finally:
+					print("Last PUBLISH")					# REMOVE 
+					## Publish Stop Time ##
+					strtstp = 2								# stop time
+					handleData(Cnt)							# create & publish
+					## Zero Counter - On Next Count ##
+					Cnt = 0 								# zero the count value
 					update_label()							# update the GUI label
 
 
@@ -497,33 +377,29 @@ def main():
 			## BUTTON: EMPLOYEE ID SCAN ##
 			##############################
 			def btn_start():
-				global strtstp										# Start/Stop (time) - Flag
 				## Gesture counter ##
-				global GestDone										# Exit Gesture mode - flag
-				global Cnt											# make global again?
-				global finPub										# Final Publish 	- flag
+				global GestDone									# Exit Gesture mode flag
+				global thr1										# 1st thread flag
+				global Cnt										# make global again?
 				## ID Scanner ##
-				global btn_state1									# changed to tri-state
-				global info											# GUI info bar
-				global qr_time										# QR timed out?
+				#global thr2										# 2nd thread flag
+				global btn_state1								# changed to tri-state
+				global info										# GUI info bar
 				## Threading ##
-				global thr1											# 1st thread flag
-				global t1											# thread object
+				global t1
 				
 				###########################
 				## START ID SCAN ROUTINE ##
 				###########################
 				if btn_state1 == 0:
+					## Update GUI Labels ##
+					bigButton["text"] = "START\nCOUNT"				# Change Button Title
+					info = "Info: Video Window Starting..."
+					update_label()
 					## Start QR Scan ##
-					QR_Scan()										# Scan (2x) QR Codes
-					#fake_scan()									## REMOVE - TEST FUNCTION ##
-					
-					if qr_time == True:
-						## Update GUI Labels ##
-						bigButton["text"] = "START\nCOUNT"			# Change Button Title
-						info = "[INFO] Video Scan Complete"			# Update info bar text
-						update_label()								# Update GUI info bar
-						btn_state1 = 1								# To "START COUNTER"
+					#QR_Scan()
+					fake_scan()
+					btn_state1 = 1									# To "START COUNTER"
 				
 				#########################
 				## START COUNT ROUTINE ##
@@ -531,42 +407,25 @@ def main():
 				elif btn_state1 == 1:
 					## Initialise thread once - can't kill ##
 					if thr1 == 0:
-						strtstp = 0									# Update Start time
+						#print("Initialise GESTURE")				# REMOVE
 						thr1 = 1									# Only once per Start
-						## Setup Gesture Counting Thread ##
-						t1 = threading.Thread(name='daemon', target=get_gesture)	# Not started yet
-						#t1 = threading.Thread(name='daemon', target=fake_gesture)	## TEST FUNCTION - REMOVE ##
-						t1.setDaemon(True)											# Make Daemonic
-						## Setup background Publisher Thread ##
-						t2 = threading.Thread(name='daemon', target=handleData)		# Not started yet
-						t2.setDaemon(True)											# Make Daemonic
-
+						#t1 = threading.Thread(name='daemon', target=get_gesture)	# Not started yet
+						t1 = threading.Thread(name='daemon', target=fake_gesture)	# Not started yet
+						t1.setDaemon(True)							# Make Daemonic
+						
 					## Update GUI Labels ##
 					bigButton["text"] = "STOP\nCOUNT"				# button label change
-					info = "[INFO] Counting..."						# User info
+					info = "Info: Start Counting..."				# User info
+					Cnt = 0											# zero counter
 					
-					## Check fail file for previous count value	 ##
-					## Create new or start count from last value ##
-					fail = failCheck(Cnt)							# Returns stored value for next count
-					if fail != '0':
-						Cnt = int(fail)								# could do this in the function
-					else:
-						Cnt = 0										# zero counter
-
 					## If thread not started (can't start twice?) ##
 					if thr1 == 1:
 						#print("Start COUNT Thread")				# REMOVE
-						thr1 = 2									# increment flag
+						thr1 = 2									# toggle flag
 						GestDone = False							# start loop
-						## BEWARE - THREADS ARE IMMORTAL! ##
+						## BEWARE - THREAD IS IMMORTAL! ##
 						t1.start()									# start gesture thread
-						t2.start()									# start publish thread
-						## Indicate Count Busy ##
-						RED.off()
-						GREEN.on()
-						## Deactivate Stage Selection ##
-						opt.configure(state="disabled")
-
+						
 					update_label()									# Update GUI info
 					btn_state1 = 2									# To "STOP COUNTER"
 				
@@ -574,27 +433,18 @@ def main():
 				## END COUNT ROUTINE #
 				######################
 				elif btn_state1 == 2:
+					#print("STOP COUNT")							# REMOVE
 					bigButton["text"] = "START\nSCAN"
-					info = "[INFO] Counting Complete"
-					
-					finPub = True									# Final Publish - STOP
-					strtstp = 2										# update stop time
-
+					info = "Info: Counting Complete"
+										
 					## If Gesture Thread is Running ##
 					if t1.isAlive():								#if thr1 == 2:
 						thr1 = 0									# Clear thread flag
 						#t1.join()									# FREEZE GUI
 						GestDone = True								# Break out of Gesture funtion
-						os.remove(failFile)							# Delete Fail File
-						## Indicate Count Complete ##
-						GREEN.off()
-						RED.on()
-						## Reactivate Stage Selection ##
-						opt.configure(state="active")
 					else:
 						print("Due to the immortal thread,")
 						print("We should never come here...")
-						print("There can be only ONE ! !")
 						
 					## Update GUI information ##
 					update_label()
@@ -607,92 +457,26 @@ def main():
 			## CREATE JSON DATA STRUCTURE ##
 			## PUBLISH TO GCP VIA MQTT	  ##
 			################################
-			def handleData():
-				global qrData											# QR Data to create JSON string
-				global iotJSON											# returned JSON string
-				global GestDone											# loop publish with gesture sensor
-				global pubNow											# Publish count flag
-				global Cnt												# Current count value
-				global finPub											# Final Publish
-
-				pubNow = False											# clear flag
-				CntCpy = 0												# Keep track of publishes
+			def handleData(Cnt):
+				global qrData									# QR Data to create JSON string
+				global iotJSON									# returned JSON string
 				
-				try:
-					## Backup Count value - unexpected power-down ##
-					if Cnt != 0:
-						failCheck(Cnt)										# No need for stored count
-					
-					## Continuously loop publisher ##
-					while GestDone == False:								# same as gesture loop ? ? ?
-						## If publish triggered ##
-						if pubNow == True:
-							## Keep checking for count difference ##
-							if CntCpy == (Cnt-1):							# if same, publish current count
-								## publish the latest 'Cnt' value ##
-								iotJSON = createJSON(qrData, Cnt)			# Convert Data to JSON format
-								CntCpy  = Cnt 								# Copy last published count value
-								pubNow = False								# count matches -> Exit publish
-								
-							## until caught up with current/final count value ##
-							else:											# if diff, publish until same
-								## publish the previous counts ##
-								iotJSON = createJSON(qrData, CntCpy)		# Convert Data to JSON format
-								CntCpy += 1									# increment until equal to 'Cnt'
-							
-							## HUNGOVER!!! ##
-							if CntCpy > Cnt:
-								pubNow = False								# count matches -> Exit publish
+				#print(qrData)									# REMOVE - view string BEFORE conversion
+				
+				## Convert Data to JSON format ##
+				iotJSON = createJSON(qrData, Cnt)
+				
+				## REMOVE ##
+				#print("{}".format(iotJSON))						# REMOVE
+				#print("STAGE: {}".format(dataDict['STAGE']))	# REMOVE
+				
+				## Publish JSON Data to IoT Core ##
+				iot_publish(iotJSON, dataDict['STAGE'])		# Pass stage??
+				#iot_publish(iotJSON, 'THRU')					# TEST
 
-							## Publish JSON Data to IoT Core ##
-							iot_publish(iotJSON, dataDict['STAGE'])
-							#print("\nPublish: {}".format(iotJSON))			# REMOVE
-
-							## Confirm Published - Once per Count ##
-							GREEN.off()
-							RED.on()
-							time.sleep(0.2)									# blink
-							RED.off()
-							GREEN.on()
-							#print("[INFO] PUBLISHED")						# REMOVE
-				## Final STOP_TIME update & Publish ##
-				finally:
-					## If publish triggered ##
-					if finPub == True:
-						finPub = False									# Clear flag
-						## Keep checking for count difference ##
-						if CntCpy == (Cnt-1):							# if same, publish current count
-							## publish the latest 'Cnt' value ##
-							iotJSON = createJSON(qrData, Cnt)			# Convert Data to JSON format
-							CntCpy  = Cnt 								# Copy last published count value
-							pubNow = False								# count matches -> Exit publish
-								
-						## until caught up with current/final count value ##
-						else:											# if diff, publish until same
-							## publish the previous counts ##
-							iotJSON = createJSON(qrData, CntCpy)		# Convert Data to JSON format
-							CntCpy += 1									# increment until equal to 'Cnt'
-							
-						## HUNGOVER!!! ##
-						if CntCpy > Cnt:
-							pubNow = False								# count matches -> Exit publish
-
-						## Publish JSON Data to IoT Core ##
-						iot_publish(iotJSON, dataDict['STAGE'])
-
-						Cnt = 0 										# zero the count value
-
-						## Confirm Published - Once per Count ##
-						#GREEN.off()
-						#RED.on()
-						#time.sleep(0.2)									# blink
-						#RED.off()
-						#GREEN.on()
-						#print("[INFO] LAST PUBLISH")					# REMOVE
-					else:
-						print("DIDN'T PUBLISH??")						# Should NEVER come here
-
-
+				print("[INFO] PUBLISHED...")					# REMOVE
+			
+			
 			#####################
 			## JSON DATA CLASS ##
 			#####################
@@ -735,41 +519,27 @@ def main():
 					firstScan = 1									# RETURN TO '0' EVERY TIME SCAN IS OPENED 
 					current_date = now.strftime("%Y-%m-%d")			# Extract date
 					dataDict['STAFF_ID'] = staffID					# Update Staff ID		- on startup
-					#dataDict['DATE'] = current_date					# insert current date
-
-					## Retrieve stored STAGE ##
-					try:
-						## Read dat and print it ##
-						with open(stage_file, "r") as f:
-							data = f.read()							# Get the Stage
-							dataDict['STAGE'] = data 				# Store to Stage feild
-							f.close()								# Close
-					except:
-							## If the file didn't exist ##			# Should never come here!!
-							f = open(stage_file,"w")				# Create in Append
-							f.write("SETUP")						# Append string
-							f.close()								# Close
-
+					dataDict['DATE'] = current_date					# insert current date
+					
 				## @start click ##
 				if strtstp == 0:
 					strtstp = 1
 					dataDict['START'] = current_time				# insert current time
 					dataDict['STOP']  = current_time				# blank stop time
 				## @stop click ##
-				elif strtstp == 2:									# zeroed again in start count click
+				elif strtstp == 2:
 					dataDict['STOP']  = current_time				# insert current time
-				
-				## Continuously Update these: ##
-				dataDict['COUNT'] = Cnt								# Update board count 	- every count
-				dataDict['TIME'] = current_time						# insert upload time
-				dataDict['DATE'] = current_date						# insert current date (over-midnight)
+
+				## Continuously Update PCB Value ##
+				dataDict['COUNT'] = Cnt 							# Update board count 	- every count
+				dataDict['TIME'] = current_time						# insert current time
 
 				## Mirror dictionary data to data class ##
 				## EDIT: Use loop to import new data ##
 				OmniData1 = OmniData()								# get object characteristics
 				OmniData1.CLIENT 	= dataDict['CLIENT']
 				OmniData1.PROJECT 	= dataDict['PROJECT']
-				OmniData1.STAGE 	= dataDict['STAGE']				# No longer updated from QR_Code
+				OmniData1.STAGE 	= dataDict['STAGE']
 				OmniData1.BOARDS 	= dataDict['BOARDS']
 				OmniData1.PANELS 	= dataDict['PANELS']
 				OmniData1.COUNT 	= dataDict['COUNT']
@@ -814,8 +584,8 @@ def main():
 			## CONNECT VIA MQTT AND PUBLISH ##
 			##################################
 			def iot_publish(message_json, stage):
-				global info 									# Update label
-
+				global info								# update info bar with Errors
+				
 				try:
 					JWT_token = create_jwt(project_id, ssl_private_key, ssl_algorithm)
 					token = JWT_token.decode('utf8')
@@ -844,51 +614,44 @@ def main():
 					}
 					
 					response = requests.request("POST", url, headers=headers, data = payload)
-					response.raise_for_status()
-				
-				except requests.exceptions.HTTPError as errh:
-					print ("NETWORK ERROR: 1")					#print ("Http Error:",errh)
-					info = "[INFO] NETWORK ERROR: 1"			# message info
-					update_label()								# Update GUI info bar
 
+				except requests.exceptions.HTTPError as errh:
+					print ("Http Error:",errh)
+					info = "NETWORK ERROR: 1"					# message info
+					update_label()								# Update GUI info bar
+					
 				except requests.exceptions.ConnectionError as errc:
-					print ("NETWORK ERROR: 2")					#print ("Error Connecting:",errc)
-					info = "[INFO] NETWORK ERROR: 2"			# message info
+					print ("Error Connecting:",errc)
+					info = "NETWORK ERROR: 2"					# message info
 					update_label()								# Update GUI info bar
 					
 				except requests.exceptions.Timeout as errt:
-					print ("NETWORK ERROR: 3")					#print ("Timeout Error:",errt)
-					info = "[INFO] NETWORK ERROR: 3"			# message info
+					print ("Timeout Error:",errt)
+					info = "NETWORK ERROR: 3"					# message info
 					update_label()								# Update GUI info bar
 					
 				except requests.exceptions.RequestException as err:
-					print ("NETWORK ERROR: 4")					#print ("Oops: Something Else",err)
-					info = "[INFO] NETWORK ERROR: 4"			# message info
+					print ("Oops: Something Else",err)
+					info = "NETWORK ERROR: 4"					# message info
 					update_label()								# Update GUI info bar
-					
+
 
 			############################
 			# DROP DOWN MENU CALLBACK ##
 			############################
 			def callback(*args):
-				global info 									# information string
+				global info 
 		
+				# Update info bar in 'main.py'
+				info = "Info: stage - {}".format(dropD.get())	# New 'info' message
+				update_label()									# Update GUI Info label
 				
-				## Update info bar in 'main.py' ##
-				info = "[INFO] stage - {}".format(dropD.get())	# New 'info' message
-				update_label()								# Update GUI Info label
-					
 				## Begin Exit Routine ##
 				if dropD.get() == "EXIT":
 					exitProgram()
 				## Update Stage to Dictionary ##
 				else:
-					## NO CODE REQUIRED FOR STAGE CHANGE (main2.py) ##
 					dataDict['STAGE'] = dropD.get()
-					## Write the new Stage to file ##
-					with open(stage_file, "w") as f:
-						f.write(dropD.get())
-						f.close()
 			
 			
 			###########################
@@ -969,11 +732,11 @@ def main():
 			def KeyPadExit(CodeDone):
 				global info										# App information
 				
-				print("[INFO] Destroy Window...")				# REMOVE
+				print("[INFO] Destroy Window...")			# REMOVE
 				keyPadWin = lay[0]								# DON'T THINK THIS WORKING??
 				
 				if CodeDone == True:
-					print("[INFO] Quit Main Program!!")			# REMOVE
+					print("[INFO] Quit Main Program!!")		# REMOVE
 					## Destroy All Windows ##
 					## NOT DESTROYING CV2 WINDOW ? ? ##
 					win.quit()
@@ -981,9 +744,9 @@ def main():
 					sys.exit(0)
 				else:
 					## Info: Exit Failed ##
-					info = "[INFO] Exit Code Incorrect"			# New 'info' message
+					info = "Info: Exit Code Incorrect"			# New 'info' message
 					update_label()								# Update GUI Info label 
-					print("[INFO] Exit Code Incorrect")			# REMOVE
+					print("[INFO] Exit Code Incorrect")		# REMOVE
 						
 					## Destroy Keypad Window ##
 					keyPadWin.destroy()							
@@ -1005,10 +768,7 @@ def main():
 					## Enter Exit Code ##
 					KeyPadWin()									# keypad input
 				else:
-					print("Still busy...")						# REMOVE
-					info = "[INFO] Stop Count to Exit"			# message info
-					update_label()								# Update GUI info bar
-
+					print("Still busy...")						# console - REMOVE
 
 
 			## INITIALISE NEW WINDOW ##
@@ -1018,10 +778,10 @@ def main():
 			myFont2 = tkFont.Font(family = 'Helvetica', size = 12, weight = 'bold')
 
 			# SETUP WINDOW PARAMTERS ##
-			win.title("OMNIGO")									# define window title
-			win.geometry('480x320+0+0')						# define screen size	- swap
-			#win.attributes("-fullscreen", True)					# full screen GUI		- swap
-			win.configure(background = "gray15")				# set colour
+			win.title("OMNIGO")							# define window title
+			#win.geometry('480x320+0+0')					# define screen size	- swap
+			win.attributes("-fullscreen", True)		# full screen GUI		- swap
+			win.configure(background = "gray15")		# set colour
 			
 			# DROP-DOWN MENU ##
 			dropD = StringVar(win)
@@ -1033,6 +793,8 @@ def main():
 						bg		= "gray15",
 						fg 		= "gray64",)
 			opt.pack(side="top", anchor="nw")
+			
+			# EXIT BUTTON - REMOVED ##
 			
 			# OMNIGO TITLE ##
 			label_2 = Label(win, 
@@ -1077,7 +839,7 @@ def main():
 							font 	= "Helvetica 30")
 			# INFORMATION ##
 			label_6 = Label(win, 
-							text	= "[INFO] {}".format(info), 
+							text	= "info: {}".format(info), 
 							fg 		= "OrangeRed2",
 							bg 		= "gray15",
 							font 	= "Helvetica 10")

@@ -1,0 +1,88 @@
+
+---------------------------------------------------------------------------------
+[20-04-2021] - Fix Boot Publishing Error:
+---------------------------------------------------------------------------------
+
+/usr/bin/python -m pip install --upgrade pip
+
+sudo apt install xterm
+
+# Change address:
+scp /home/antz/Desktop/temp/omnigo/boot/boot.sh pi@192.168.0.1xx:/home/pi/
+scp /home/antz/Desktop/temp/omnigo/boot/crontab.txt pi@192.168.0.1xx:/home/pi/
+
+crontab -e
+
+# Add the following
+@reboot sleep 45 && /home/pi/boot.sh
+
+sudo apt install libffi-dev
+sudo apt install libssl-dev
+
+sudo pip install -U cryptography
+
+sudo apt update
+sudo apt -y upgrade
+sudo reboot
+
+---------------------------------------------------------------------------------
+
+
+
+---------------------------------------------------------------------------------
+Omnigo Fix:
+---------------------------------------------------------------------------------
+**Not running full code at boot - FIX:**
+
+The following will install "xterm" and then run new terminal window at boot beofre 
+executing python command inside that terminal window.
+
+* Run full updates + upgrades
+* Install:
+
+	sudo apt install xterm
+
+* Create **booot.sh** (make executable):
+
+	#!/bin/bash
+
+	DISPLAY=:0 xterm -hold -e bash -c "python /home/pi/main/main.py"  &
+
+
+* Add to **crontab -e** (with 45 sec delay):
+
+	@reboot sleep 45 && /home/pi/boot.sh
+
+
+
+
+
+---------------------------------------------------------------------------------
+Original crontab:
+---------------------------------------------------------------------------------
+If necessary, create "master.py" that runs the full script with extensions:
+
+Run:
+
+	sudo crontab -e
+
+
+Select [2] **nano** and add the following:
+
+	# must fork code with '&' character
+	@reboot sleep 35 && sudo python /home/pi/main/main.py &
+
+
+---------------------------------------------------------------------------------
+To kill:
+--------
+Run:
+	ps aux
+
+Find the PID of the python script:
+
+	sudo kill "ṔID"	# eg. sudo kill 541
+
+
+
+---------------------------------------------------------------------------------

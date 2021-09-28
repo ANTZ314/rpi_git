@@ -1,0 +1,227 @@
+--------------
+Gesture Notes:
+--------------
+
+-----------------------------
+ORIGINAL & REPLACEMENT BOARD:
+-----------------------------
+Previous version: 
+-----------------
+APDS-9960 RGB and Gesture Sensor Module
+Product Code: GY-9960-3.3   - R90.85
+
+MicroRobotics:  
+https://www.robotics.org.za/GY-9960-33V?search=gesture
+
+
+New Version:
+------------
+APDS9960 Proximity, Light, RGB
+Product Code: AF3595        - R159.85
+
+MicroRobotics:  
+https://www.robotics.org.za/AF3595?search=apds
+
+
+Adafruit Product Pages:
+https://learn.adafruit.com/adafruit-apds9960-breakout
+https://www.adafruit.com/product/3595
+
+
+------------
+Other Links:
+------------
+GITHUB - Python (and MicroPython) APDS-9960 Library:
+https://github.com/liske/python-apds9960
+https://github.com/sparkfun/SparkFun_APDS-9960_Sensor_Arduino_Library
+
+
+RasPi - APDS9960 (circuitpython - install & test):
+https://learn.adafruit.com/adafruit-apds9960-breakout/circuitpython
+
+
+RasPi Python library for the APDS-9960:
+https://pypi.org/project/apds9960/
+
+
+RasPi I2C APDS9960 interface:
+https://pypi.org/project/RPi.apds9960/
+
+
+Adafruit APDS9960 breakout:
+https://learn.adafruit.com/adafruit-apds9960-breakout/overview
+
+
+Wiring the APDS 9930 Ambient Light Sense:
+https://www.instructables.com/id/Wiring-the-APDS-9930-Ambient-Light-Sense-APDS-9960/
+http://www.14core.com/wiring-the-apds-9930-ambient-light-sense-apds-9960-rgb-gesture-sensor-with-microcontroller/
+
+
+
+------------------------------------------------------------------------------------------
+								GESTURE FUNCTIONS:
+------------------------------------------------------------------------------------------
+
+Link: 
+https://os.mbed.com/users/kbhagat6/code/APDS_9960/file/ba051af6731a/glibr.cpp/
+
+
+setGestureEnterThresh()			- Sets the entry proximity threshold for gesture sensing
+
+
+setGestureExitThresh()			- Sets the exit proximity threshold for gesture sensing
+
+
+setGestureIntEnable()			- Turns gesture-related interrupts on or off (1=enable)
+
+
+setGestureMode()				- Tells the state machine to either enter or exit gesture state machine
+								- mode 1 to enter gesture state machine, 0 to exit.
+
+
+setGestureGain()
+Sets the gain of the photodiode during gesture mode
+ 
+ * Value    Gain
+ *   0       1x
+ *   1       2x
+ *   2       4x
+ *   3       8x
+
+
+setGestureLEDDrive()
+Sets the LED drive current during gesture mode
+ 
+ * Value    LED Current
+ *   0        100 mA
+ *   1         50 mA
+ *   2         25 mA
+ *   3         12.5 mA
+
+
+setGestureWaitTime()
+Sets the time in low power mode between gesture detections
+ 
+ * Value    Wait time
+ *   0          0 ms
+ *   1          2.8 ms
+ *   2          5.6 ms
+ *   3          8.4 ms
+ *   4         14.0 ms
+ *   5         22.4 ms
+ *   6         30.8 ms
+ *   7         39.2 ms
+
+
+setLEDBoost()
+Sets the LED current boost value
+ 
+ * Value  Boost Current
+ *   0        100%
+ *   1        150%
+ *   2        200%
+ *   3        300%
+
+
+------------------------------------------------------------------------------------------
+## Not Required For Gesture?? (Ambient/Proximity Functions) ##
+------------------------------------------------------------------------------------------
+setProximityIntEnable()			- Turns proximity interrupts on or off (0=disable)
+clearAmbientLightInt()			- Clears the ambient light interrupt
+setLightIntLowThreshold()		- Sets the low threshold for ambient light interrupts
+								- 16-bit
+setLightIntHighThreshold()		- Sets the high threshold for ambient light interrupts
+								- 16-bit
+setAmbientLightGain()
+Sets the receiver gain for the ambient light sensor (ALS)
+ *
+ * Value    Gain
+ *   0        1x
+ *   1        4x
+ *   2       16x
+ *   3       64x
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------------------------------------------------------
+								SETUP & DISABLE:
+------------------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/**
+ * @brief Starts the gesture recognition engine on the APDS-9960
+ *
+ * @param[in] interrupts true to enable hardware external interrupt on gesture
+ * @return True if engine enabled correctly. False on error.
+ */
+bool SparkFun_APDS9960::enableGestureSensor(bool interrupts)
+{
+    
+    /* Enable gesture mode
+       Set ENABLE to 0 (power off)
+       Set WTIME to 0xFF
+       Set AUX to LED_BOOST_300
+       Enable PON, WEN, PEN, GEN in ENABLE 
+    */
+    resetGestureParameters();
+    if( !wireWriteDataByte(APDS9960_WTIME, 0xFF) ) {
+        return false;
+    }
+    if( !wireWriteDataByte(APDS9960_PPULSE, DEFAULT_GESTURE_PPULSE) ) {
+        return false;
+    }
+    if( !setLEDBoost(LED_BOOST_300) ) {
+        return false;
+    }
+    if( interrupts ) {
+        if( !setGestureIntEnable(1) ) {
+            return false;
+        }
+    } else {
+        if( !setGestureIntEnable(0) ) {
+            return false;
+        }
+    }
+    if( !setGestureMode(1) ) {
+        return false;
+    }
+    if( !enablePower() ){
+        return false;
+    }
+    if( !setMode(WAIT, 1) ) {
+        return false;
+    }
+    if( !setMode(PROXIMITY, 1) ) {
+        return false;
+    }
+    if( !setMode(GESTURE, 1) ) {
+        return false;
+    }
+    
+    return true;
+}
+
+
+/**
+ * @brief Ends the gesture recognition engine on the APDS-9960
+ *
+ * @return True if engine disabled correctly. False on error.
+ */
+bool SparkFun_APDS9960::disableGestureSensor()
+{
+    resetGestureParameters();
+    if( !setGestureIntEnable(0) ) {
+        return false;
+    }
+    if( !setGestureMode(0) ) {
+        return false;
+    }
+    if( !setMode(GESTURE, 0) ) {
+        return false;
+    }
+    
+    return true;
+}
+
+
+
+

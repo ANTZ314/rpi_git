@@ -1,0 +1,51 @@
+====================================================================================================
+								OMNIGO NOTES:
+====================================================================================================
+
+QR_Generator:
+https://www.the-qrcode-generator.com/
+
+------------------------------------------------------------------------------------------------
+TEST STRINGS:
+------------------------------------------------------------------------------------------------
+[01]
+CLIENT=Omnigo,PROJECT=01MKA0PA,STAGE=SETUP,BOARDS=1000,PANELS=50,COUNT=00,STAFF_ID=159,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[02]
+CLIENT=TheLeague,PROJECT=234567891,STAGE=SETUP,BOARDS=500,PANELS=25,COUNT=00,STAFF_ID=456,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[03]
+CLIENT=Spectre,PROJECT=345678912,STAGE=SETUP,BOARDS=250,PANELS=12,COUNT=00,STAFF_ID=852,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[04]
+CLIENT=WayneCorp,PROJECT=456789123,STAGE=SETUP,BOARDS=750,PANELS=20,COUNT=00,STAFF_ID=258,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[05]
+CLIENT=DailyBugle,PROJECT=567891234,STAGE=SETUP,BOARDS=150,PANELS=10,COUNT=00,STAFF_ID=654,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[06]
+CLIENT=DailyPlanet,PROJECT=678912345,STAGE=SETUP,BOARDS=300,PANELS=20,COUNT=00,STAFF_ID=357,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[07]
+CLIENT=OsCorp,PROJECT=789123456,STAGE=SETUP,BOARDS=899,PANELS=22,COUNT=00,STAFF_ID=951,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+[08]
+CLIENT=MonstersInc,PROJECT=891234567,STAGE=SETUP,BOARDS=420,PANELS=16,COUNT=00,STAFF_ID=753,DATE=11-06-2020,TIME=08:35,START=00:00,STOP=00:00,REASON=NULL,SERIAL=987654321
+
+
+
+
+------------------------------------------------------------------------------------------------
+PROJECT NUMBERS LIST:
+------------------------------------------------------------------------------------------------
+123456789, 		234567891, 
+345678912, 		456789123
+567891234, 		678912345, 
+789123456, 		891234567
+
+
+------------------------------------------------------------------------------------------------
+STAFF NUMBERS LIST:
+------------------------------------------------------------------------------------------------
+159, 	456, 	852, 	258, 
+654, 	357, 	951, 	753
