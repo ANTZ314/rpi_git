@@ -1,0 +1,82 @@
+=========================
+udemy: Deep Learning A-Z:
+=========================
+
+Course Link:
+https://www.udemy.com/deeplearning/
+
+Login:		main Gmail
+Password:	same
+
+Install Python 3.6 & set as default python3
+
+Download and install anaconda for python3.6
+
+$ source ~/.bashrc
+
+conda install:
+- theano
+- tensorflow
+- keras
+
+conda upgrade --all
+
+
+
+
+=========================
+Directory:
+=========================
+Vol1	- Supervised Deep Learning:
+		-> [ANN] Part 1 - Artificial Neural Network
+			--> [Sec2] Section 2 - Part 1 - ANN
+			--> [Sec4] Section 4 - Building an ANN
+			--> [Sec5] Section 5 - Evaluating, Improving and Tuning the ANN
+
+		-> [CNN] Part 2 - Convolutional Neural Network
+			--> CNN example + dataset (Cat/Dog Classifier)
+
+		-> [RNN] Part 3 - Recurring Neural Network
+			--> RNN example + training & test set
+
+Vol2	- Unsupervised Deep Learning:
+		-> Part 4 - Self Organizing Maps (SOM)
+		-> Part 5 - Boltzmann Machines (BM)
+		-> Part 6 - AutoEncoders (AE)
+
+------------
+Virtual Env:
+------------
+ACTIVATE:
+source /home/antz/virtualenv/DPenv/bin/activate
+INSTALL:
+sudo -H /home/antz/virtualenv/DPenv/bin/pip3 install -U --no-deps 'packages'
+CHECK:
+/home/antz/virtualenv/DPenv/bin/pip3 freeze
+
+SPYDER:
+[from within DPenv]
+pip3 installed spyder pyqt5
+pip3 installed --upgrade spyder
+$ find /home/antz/virtualenv/DPenv -name spyder
+/home/antz/virtualenv/DPenv/lib/python3.6/site-packages/spyder
+/home/antz/virtualenv/DPenv/bin/spyder
+
+-------------
+Library ​Note:
+-------------
+Personal PC:    - Installed outside virtual env - python3
+Work PC:    	- Installed outside virtual env - python3
+
+tensoflow:
+import tensoflow
+print(tensoflow.__version__)
+
+keras:
+import keras
+print(keras.__version__)
+
+theano:
+import theano
+print(theano.__version__)
+

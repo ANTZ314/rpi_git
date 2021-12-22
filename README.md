@@ -1,15 +1,29 @@
+# Github Working Folder:
 
-## RasPi Working Folder:
+## Current GIT Projects:
 
-**Description:**
-Working folders backed up to github, PC-Documents & RasPi
+* **gait**:
+	* Gait Tracking Project
+	* Updated and improved Aubry's code
+* **omnicode**:
+	* Omnigo test and main code
+	* Latest version uploaded??
+* ****:
+	*
+	* [Article]()
+	* [Gitub]()
 
-#### GIT Commands:
-**Pull:**
+---
+### GIT Commands:
+**Copy External Project**
+
+	git clone *link*
+
+**Update FROM my Github (Pull):**
 
 	git pull https://github.com/ANTZ314/rpi_git.git
 
-**Push:**
+**Update TO my Github (Push):**
 
 	git add .
 	git commit -m ""
@@ -19,12 +33,3 @@ Working folders backed up to github, PC-Documents & RasPi
 	
 	git config --global user.name "FIRST_NAME LAST_NAME"
 	git config --global user.email "MY_NAME@example.com"
-
-
-
-
-**Current TSE projects on the RasPi:**
-
-* Gait Tracking - Aubry code check
-* Omnigo test and main code (main requires update)
-

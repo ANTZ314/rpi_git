@@ -1,0 +1,44 @@
+
+----------------------
+Stock Predictor Error:
+----------------------
+
+
+cd ~/Desktop/temp/pred/works
+
+python rnn.py
+
+
+
+
+Runtime ERROR:
+--------------
+Traceback (most recent call last):
+  
+  File "rnn.py", line 82, in <module>
+    inputs = sc.transform(inputs)        # Scale the inputs to match scale used for training
+  
+  File "/usr/local/lib/python3.8/dist-packages/sklearn/preprocessing/_data.py", l
+  ine 407, in transform
+    X = check_array(X, copy=self.copy, dtype=FLOAT_DTYPES,
+  
+  File "/usr/local/lib/python3.8/dist-packages/sklearn/utils/validation.py", 
+  line 72, in inner_f
+    return f(**kwargs)
+  
+  File "/usr/local/lib/python3.8/dist-packages/sklearn/utils/validation.py", 
+  line 612, in check_array
+    raise ValueError(
+
+ValueError: Expected 2D array, got scalar array instead:
+array=6572.6.
+
+Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.
+
+
+
+
+
+
+
+

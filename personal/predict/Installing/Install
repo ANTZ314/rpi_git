@@ -1,0 +1,157 @@
+==========================================================
+2020 Package List
+==========================================================
+
+virtualenv
+numpy
+scipy
+sklearn
+theano
+tensorflow
+keras
+matplotlib
+pandas
+
+
+==========================================================
+2018 Package List:
+==========================================================
+
+pip
+h5py
+keras
+numpy
+scipy
+sklearn
+tensorflow
+theano
+
+Pillow 4.1.1
+h5py-2.7.0.dist-info
+Keras-2.0.5.egg-info
+numpy-1.13.0.dist-info
+scikit_learn-0.18.1.dist-info
+scipy-0.19.1.dist-info
+tensorflow-1.1.0.dist-info
+Theano-0.10.0.dev1.egg-info
+
+
+==========================================================
+FROM HADELIN:
+==========================================================
+Building ANN - Step1	||	Mine [2017-07]
+----------------------------------------------------------
+theano-0.8.2			||	- 0.9.0
+	- six 1.9.0			||	- 1.9.0
+	- scipy 0.11		||	- 0.14
+	- numpy 1.7.1		||	- 1.9.1
+						||
+tensorflow-1.0.0		||	- 1.2.1
+	- six 1.10.0		||	- 1.10.0
+	- wheel 0.26		||	- 0.26
+	- setuptools		||	- setuptools
+						||
+keras-2.0.1				||	- 2.0.6
+	- theano			||
+	- pyyaml			||
+	- six				||
+	- numpy				||
+	- scipy				||
+
+
+! Then upgrade all!!
+
+
+
+==========================================================
+LINKS:
+==========================================================
+Course:
+https://www.udemy.com/deeplearning/learn/v4/overview
+
+Data Sets:
+https://www.superdatascience.com/deep-learning/
+
+
+==========================================================
+Tensorflow Requierd Distro's:
+==========================================================
+x	wheel
+x	werkzeug (>=0.11.10)
+x	six (>=1.10.0)
+x	protobuf (>=3.2.0)
+x	numpy (>=1.11.0)
+x	mock (>=2.0.0)
+	markdown (>=2.6.8)
+	html5lib (==0.9999999)
+x	bleach (==1.5.0)
+x	backports.weakref (==1.0rc1)
+
+Something else:
+x	pyyaml-3.12
+
+
+
+==========================================================
+INSTALL COMMANDS:
+==========================================================
+x pip / pip3
+x spyder3
+* theano
+* keras
+* tensorflow
+
+====================
+Install for Python3:
+====================
+
+sudo apt-get install python-numpy python-scipy python-dev python-pip python-nose g++ libopenblas-dev git
+
+sudo pip3 install --upgrade
+
+sudo pip3 install Theano
+
+sudo pip3 install tensorflow
+
+sudo pip3 install keras
+
+sudo apt-get install spyder3
+
+======================
+Uninstall for Python3:
+======================
+
+$ sudo pip3 uninstall tensorflow
+
+$ sudo pip3 uninstall keras
+
+$ sudo pip3 uninstall Theano
+
+====================
+Install for Python2:
+====================
+
+sudo apt-get install python-numpy python-scipy python-dev python-pip python-nose g++ libopenblas-dev git
+
+sudo pip install --upgrade
+
+sudo pip install Theano
+
+sudo pip install keras
+
+sudo pip install tensorflow
+
+sudo apt-get install spyder3
+
+======================
+Uninstall for Python2:
+======================
+
+$ sudo pip uninstall tensorflow
+
+$ sudo pip uninstall keras
+
+$ sudo pip uninstall Theano
+
+
+

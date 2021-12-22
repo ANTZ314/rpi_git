@@ -1,0 +1,107 @@
+=======================================
+CREATING AND USING VIRTUAL ENVIRONMENT:
+=======================================
+
+==========================================================
+Make sure correct version of pip is installed:
+==========================================================
+## Open a terminal and install the following packages.
+----
+PIP:
+----
+$ sudo -H apt-get install python-pip python-dev build-essential
+$ sudo -H pip install virtualenv virtualenvwrapper
+$ sudo -H pip install --upgrade pip
+
+-----
+PIP3:
+-----
+$ sudo -H apt-get install python3-pip python3-dev build-essential
+$ sudo -H pip3 install virtualenv virtualenvwrapper
+$ sudo -H pip3 install --upgrade pip
+
+==========================================================
+THIS WORKED:
+------------
+$ mkdir virtualenvs						<- The directory to store all 'venvs'
+$ cd virtualenvs						<- Where they're running from
+$ virtualenv venv --python=python3.6	<- Create new virtual env
+
+To activate it:
+$ source <path-to-the-virtualenv>/bin/activate
+$ deactivate							<- To deactive it
+
+==========================================================
+THIS WORKED:
+------------
+Creating / Initiating a virtual environment (virtualenv)
+Creating an environment using the same interpreter used to run it:
+
+ # Example: virtualenv [folder (env.) name]
+ # Let's create an environment called *my_app*
+ $ virtualenv my_app
+
+Creating an environment with a custom Python interpreter:
+ # Example: virtualenv --python=[loc/to/python/] [env. name]
+ $ virtualenv --python=/opt/python-3.3/bin/python my_app
+
+Activating a virtual environment
+ # Example: source [env. name]/bin/activate
+ # Let's activate the Python environment we just created
+ $ source my_app/bin/activate
+
+==========================================================
+To Pip install and check packages:
+==========================================================
+Use the file path to specify which pip is being used
+
+$ sudo -H /home/antz/virtualenv/DPenv/bin/pip3 install -U --no-deps 'package'
+$ /home/antz/virtualenv/DPenv/bin/pip3 freeze
+
+
+---------------------------------------------------------------------------
+===========================================================================
+---------------------------------------------------------------------------
+ALL THIS FAILED WITH PYTHON 3.6:
+/usr/bin/python: No module named virtualenvwrapper
+virtualenvwrapper.sh: There was a problem running the initialization hooks
+---------------------------------------------------------------------------
+---------------------------------------------------------------------------
+## Setup virtualenvwrapper in ~/.bashrc
+# Create a backup of your .bashrc file
+$ cp ~/.bashrc ~/.bashrc-org
+
+## Add these lines to ~/.bashrc:
+# [Be careful with this command]
+$ sudo nano ~/.bashrc
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# virtualenv and virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After editing it, reload the startup file:
+$ source ~/.bashrc
+
+---------------------------------------------------------------------------
+## Enable the virtual environment.
+$ source ~/.bashrc					<- reload the startup file
+$ mkdir -p $WORKON_HOME				<- ???
+$ mkvirtualenv venv					<- create new 'venv'
+
+## To enable the api 'venv' virtual environment:
+$ workon venv
+
+# Exit the 'venv' virtual environment:
+$ deactivate
+
+---------------------------------------------------------------------------
+INSTALLING TO A VIRTUAL_ENV:
+
+ # Example: pip install [env name] [package name]
+ # This will either install inside an environment, or create one
+ # Let's install requests inside a virtualenv called *venv*
+ pip install -E venv requests
+
+---------------------------------------------------------------------------
+

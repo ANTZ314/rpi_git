@@ -1,0 +1,52 @@
+
+--------------
+USING CRONTAB:
+--------------
+$ sudo crontab -e
+Select nano and add this line:
+@reboot python /home/pi/security/main.py --conf /home/pi/security/conf.json
+@reboot sleep 35 && sudo python /home/pi/master.py &
+
+========
+To kill:
+========
+$ ps aux
+-> find the PID of the python script
+
+$ sudo kill "ṔID"	-> kill 541
+
+----------
+MAIN PATH:
+----------
+/home/pi/security/main.py
+
+------------
+OTHER PATHS:
+------------
+cd /home/pi/Documents/PiSecurity/security1/final[2018_06]
+
+cd /home/pi/Documents/PiSecurity/security1/functions/oledUsb
+
+cd /home/pi/Documents/PiSecurity/security1/functions/btnOled
+
+
+--------------------------------------------------------------------------
+								EJECT??
+--------------------------------------------------------------------------
+You just need to do:
+
+sudo apt-get install eject
+sudo eject /dev/sda
+
+
+Then udisks works just fine:
+
+udisks --unmount /dev/sda
+udisks --eject /dev/sda
+
+--------------------------------------------------------------------------
+
+cmd = "sudo umount /dev/sdb1"
+os.system(cmd)
+
+--------------------------------------------------------------------------
