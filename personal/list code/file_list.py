@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
+-------------------------------------------------------------------
 Description:
 Create a list of all folders and the files within
-
-Python ??
+-------------------------------------------------------------------
 -> Primary List of Directory Names - [List]						| x
 -> Get number of sub-direcotries								| x
 -> Get number of files in each sub-directory					| x
@@ -14,6 +14,7 @@ Python ??
 -> If exists, opens existing file								| .
 -> Appends the names of each file in the folder of "file_path2"	| .
 -> Write to directory contents to the file						| .
+-------------------------------------------------------------------
 """
 
 import sys
